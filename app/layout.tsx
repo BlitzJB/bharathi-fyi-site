@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
-import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -43,7 +42,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="grain" aria-hidden />
         <SiteNav />
         {children}
-        <SiteFooter />
       </body>
     </html>
   );

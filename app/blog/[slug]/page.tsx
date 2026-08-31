@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypePrettyCode from "rehype-pretty-code";
 import { getAllPosts, getPost, formatDate } from "@/lib/blog";
 import { mdxComponents } from "@/components/mdx-components";
+import { SiteFooter } from "@/components/site-footer";
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -34,6 +35,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
   if (!post) notFound();
 
   return (
+    <>
     <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-16 sm:py-24">
       <Link href="/blog" className="u-link font-mono text-xs no-underline hover:underline">
         &larr; Writing
@@ -64,5 +66,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
         />
       </article>
     </main>
+    <SiteFooter />
+    </>
   );
 }

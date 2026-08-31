@@ -164,6 +164,12 @@ export default function HomePage() {
               </ul>
             </section>
           )}
+
+          {/* Landing footer lives in the left column so the chat pane runs
+              to the bottom edge on desktop */}
+          <footer className="mt-20 hidden border-t border-line pt-6 font-mono text-xs text-ink-faint lg:block">
+            <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
+          </footer>
         </div>
       </div>
 
@@ -174,6 +180,10 @@ export default function HomePage() {
       >
         <ChatPanel conceptCount={concepts} />
       </aside>
+
+      <footer className="border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
+        <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
+      </footer>
     </main>
   );
 }
