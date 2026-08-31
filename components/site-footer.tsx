@@ -1,7 +1,7 @@
 export function SiteFooter() {
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-baseline justify-between gap-3 px-6 py-6 font-mono text-xs text-ink-faint">
+      <div className="flex w-full flex-wrap items-baseline justify-between gap-3 px-6 py-6 font-mono text-xs text-ink-faint lg:px-8">
         <p>&copy; {new Date().getFullYear()} Joshua Bharathi · Chennai</p>
         <div className="flex gap-6">
           <a
