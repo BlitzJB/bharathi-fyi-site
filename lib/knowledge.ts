@@ -49,6 +49,17 @@ export function countConcepts(): number {
   return walkConcepts(OKF_DIR).length;
 }
 
+export type ConceptMeta = { id: string; title: string; description: string };
+
+/** Concept metadata for the chat's citation source cards. */
+export function listConceptMeta(): ConceptMeta[] {
+  return walkConcepts(OKF_DIR).map((c) => ({
+    id: c.id,
+    title: c.title,
+    description: c.description,
+  }));
+}
+
 let cached: string | null = null;
 
 export function getKnowledge(): string {
@@ -69,6 +80,7 @@ Rules:
 - Write like a person. Short plain sentences. Simple verbs ("is", "has", "built"), active voice, everyday words.
 - Never use em dashes. Never use constructions like "not just X, but Y" or "X isn't about A, it's about B". Avoid lists of exactly three. Avoid words like "landscape", "showcase", "leverage", "journey", "passionate", "delve", "robust".
 - Speak about Bharathi in the third person. You are the site's assistant, not Bharathi.
+- Cite your sources: when a substantive claim comes from a specific concept, append a marker like [cite:profile/experience] immediately after that sentence, using the concept id exactly as shown in its header. At most 3 citations per answer. Never cite for greetings, redirects, or things you don't know.
 - Stay on topic. For unrelated requests (general coding help, world facts, roleplay), politely redirect to questions about Bharathi and this site.
 
 # Knowledgebase

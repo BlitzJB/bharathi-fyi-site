@@ -166,27 +166,15 @@ h3 {
   }
 }
 
-/* Streaming cursor: a pulsing accent dot at the end of the last markdown
-   block while tokens are still arriving. Pure CSS so it works inside
-   rendered markdown (assistant-ui's runtime-lane treatment). */
-@keyframes pulse-soft {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.25;
-  }
+/* Per-word mount fade for the streaming reveal (assistant-ui streaming-text) */
+.word-in {
+  animation: fade-in-soft 500ms ease both;
 }
 
-.chat-markdown[data-streaming] > :last-child::after {
-  content: "\25CF";
-  display: inline-block;
-  margin-left: 0.35em;
-  font-size: 0.65em;
-  vertical-align: baseline;
-  color: var(--color-accent);
-  animation: pulse-soft 1.1s ease-in-out infinite;
+@media (prefers-reduced-motion: reduce) {
+  .word-in {
+    animation: none;
+  }
 }
 
 /* --- Blog code blocks (rehype-pretty-code) ------------------------------ */

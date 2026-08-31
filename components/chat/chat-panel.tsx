@@ -2,12 +2,18 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import type { ConceptMeta } from "@/lib/knowledge";
 import { ChatMessage, messageText } from "./message";
 import { ThinkingIndicator } from "./thinking-indicator";
 import { ErrorState } from "./error-state";
-import { iconSwap, iconSwapIn, iconSwapOut } from "./surfaces";
-import { ArrowUpIcon, SquareIcon } from "./icons";
+import {
+  Composer,
+  ComposerBar,
+  ComposerInput,
+  ComposerToolbar,
+  ComposerActions,
+  ComposerSend,
+} from "./composer";
 
 const STARTERS = [
   "What has he actually built?",
@@ -16,7 +22,15 @@ const STARTERS = [
   "How do I reach him?",
 ];
 
-export function ChatPanel({ conceptCount }: { conceptCount: number }) {
+export function ChatPanel({
+  conceptCount,
+  concepts,
+  model,
+}: {
+  conceptCount: number;
+  concepts: ConceptMeta[];
+  model: string;
+}) {
   const { messages, sendMessage, status, error, stop, regenerate, clearError } =
     useChat();
   const [input, setInput] = useState("");
@@ -30,6 +44,9 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
   const answerVisible =
     lastMessage?.role === "assistant" && messageText(lastMessage).length > 0;
   const thinking = busy && !answerVisible;
+  const retrying = retryRequested && busy;
+  const hasText = input.trim().length > 0;
+  const modelName = model.split("/").pop() ?? model;
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -42,8 +59,6 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
     const id = setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, [thinking]);
-
-  const retrying = retryRequested && busy;
 
   function autoresize() {
     const el = textareaRef.current;
@@ -73,8 +88,6 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
     setElapsed(0);
     regenerate();
   }
-
-  const hasText = input.trim().length > 0;
 
   return (
     <section
@@ -145,6 +158,7 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
                 <ChatMessage
                   key={message.id}
                   message={message}
+                  concepts={concepts}
                   streaming={busy && isLast && message.role === "assistant"}
                   onRegenerate={
                     !busy && isLast && message.role === "assistant"
@@ -175,57 +189,40 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
 
       {/* Composer */}
       <div className="shrink-0 px-4 pb-4 sm:px-6 sm:pb-6 lg:px-8">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit(input);
-          }}
-          className="mx-auto max-w-[36rem] rounded-xl border border-line-strong bg-surface shadow-[0_1px_2px_rgba(20,20,15,0.05),0_4px_16px_rgba(20,20,15,0.04)] transition-[border-color,box-shadow] duration-200 focus-within:border-ink-faint focus-within:shadow-[0_1px_2px_rgba(20,20,15,0.06),0_8px_28px_rgba(20,20,15,0.08)]"
-        >
-          <textarea
-            ref={textareaRef}
-            value={input}
-            rows={1}
-            onChange={(e) => {
-              setInput(e.target.value);
-              autoresize();
-            }}
-            onKeyDown={(e) => {
-              if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing)
-                return;
-              e.preventDefault();
-              submit(input);
-            }}
-            placeholder="Ask about Bharathi's work&hellip;"
-            maxLength={2000}
-            aria-label="Your question"
-            className="max-h-40 w-full resize-none overflow-y-hidden bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed text-ink caret-accent placeholder:text-ink-faint focus:outline-none"
-          />
-          <div className="flex items-center justify-between px-3 pb-2.5 pl-4">
-            <p className="hidden font-mono text-[11px] text-ink-faint select-none sm:block">
-              &#9166; send&ensp;&#8679;&#9166; new line
-            </p>
-            <button
-              type={busy ? "button" : "submit"}
-              onClick={busy ? () => stop() : undefined}
-              disabled={!busy && !hasText}
-              aria-label={busy ? "Stop generating" : "Send message"}
-              className={cn(
-                "pressable grid size-8 place-items-center rounded-lg transition-colors duration-150",
-                busy || hasText
-                  ? "bg-ink text-paper hover:bg-ink-soft"
-                  : "cursor-default bg-ink/[0.06] text-ink-faint/60",
-              )}
-            >
-              <ArrowUpIcon
-                className={cn(iconSwap, "size-4", busy ? iconSwapOut : iconSwapIn)}
-              />
-              <SquareIcon
-                className={cn(iconSwap, "size-4", busy ? iconSwapIn : iconSwapOut)}
-              />
-            </button>
-          </div>
-        </form>
+        <Composer className="mx-auto max-w-[36rem]">
+          <ComposerBar>
+            <ComposerInput
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                autoresize();
+              }}
+              onSubmit={() => submit(input)}
+              placeholder="Ask about Bharathi's work&hellip;"
+              maxLength={2000}
+              aria-label="Your question"
+              className="max-h-40"
+            />
+            <ComposerToolbar>
+              <p className="hidden items-center gap-1.5 ps-3 font-mono text-[11px] text-ink-faint select-none sm:flex">
+                <span
+                  aria-hidden
+                  className="size-1.5 rounded-full bg-accent/60"
+                />
+                {modelName}
+              </p>
+              <ComposerActions>
+                <ComposerSend
+                  streaming={busy}
+                  idle={hasText}
+                  disabled={!busy && !hasText}
+                  onClick={busy ? () => stop() : () => submit(input)}
+                />
+              </ComposerActions>
+            </ComposerToolbar>
+          </ComposerBar>
+        </Composer>
       </div>
     </section>
   );

@@ -6,6 +6,13 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
+export const paper = "bg-surface border border-line";
+
+export const inkButton =
+  "bg-ink text-paper transition-[opacity,scale] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:opacity-90 active:scale-[0.96] motion-reduce:transition-none";
+
+export const mono = "font-mono text-[11px] tracking-tight";
+
 export const ghostButton =
   "flex items-center justify-center rounded-full text-ink-faint outline-none transition-[background-color,color,scale] duration-150 hover:bg-ink/[0.06] hover:text-ink active:scale-[0.96] focus-visible:ring-1 focus-visible:ring-ink/20 motion-reduce:transition-none";
 
