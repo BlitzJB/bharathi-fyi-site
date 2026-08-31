@@ -203,6 +203,9 @@ export default function HomePage() {
       <footer className="border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
         <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
       </footer>
+
+      {/* End-of-page sentinel for the section rail's bottom pin */}
+      <div id="page-end" aria-hidden className="h-px w-px" />
     </main>
   );
 }

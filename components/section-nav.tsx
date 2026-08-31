@@ -26,13 +26,12 @@ export function SectionNav({ sections }: { sections: Section[] }) {
     }
 
     // A short final section near the page end never reaches the reading
-    // band, so when it is essentially fully in view, pin it active.
-    const lastEl = document.getElementById(sections[sections.length - 1]?.id ?? "");
-    const end = new IntersectionObserver(
-      ([entry]) => setEndPinned(entry.intersectionRatio >= 0.95),
-      { threshold: [0.95] },
+    // band, so pin it active once the page is scrolled to its very end.
+    const sentinel = document.getElementById("page-end");
+    const end = new IntersectionObserver(([entry]) =>
+      setEndPinned(entry.isIntersecting),
     );
-    if (lastEl) end.observe(lastEl);
+    if (sentinel) end.observe(sentinel);
 
     return () => {
       band.disconnect();
