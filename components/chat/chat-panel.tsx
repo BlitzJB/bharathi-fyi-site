@@ -22,13 +22,7 @@ const STARTERS = [
   "How do I reach him?",
 ];
 
-export function ChatPanel({
-  conceptCount,
-  concepts,
-}: {
-  conceptCount: number;
-  concepts: ConceptMeta[];
-}) {
+export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
   const { messages, sendMessage, status, error, stop, regenerate, clearError } =
     useChat();
   const [input, setInput] = useState("");
@@ -91,15 +85,6 @@ export function ChatPanel({
       aria-label="Ask Bharathi's assistant"
       className="flex h-full flex-col"
     >
-      {/* Title strip */}
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5 sm:px-6 lg:px-8">
-        <h2 className="font-mono text-xs text-ink">assistant</h2>
-        <p className="font-mono text-[11px] text-ink-faint">
-          grounded in <span className="text-accent-ink">.okf/</span> ·{" "}
-          {conceptCount} concepts
-        </p>
-      </header>
-
       {/* Messages */}
       <div
         ref={scrollRef}

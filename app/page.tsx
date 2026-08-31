@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChatPanel } from "@/components/chat/chat-panel";
+import { SectionNav } from "@/components/section-nav";
 import { getAllPosts } from "@/lib/blog";
 import { listConceptMeta } from "@/lib/knowledge";
 
@@ -43,8 +44,9 @@ export default function HomePage() {
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,40%)] lg:px-8">
       {/* Left: scrolling column */}
-      <div className="py-16 lg:py-20 lg:pr-16">
+      <div className="py-16 lg:flex lg:items-start lg:gap-12 lg:py-20 lg:pr-14">
         <div className="max-w-[38rem]">
+          <div id="intro" className="scroll-mt-24">
           <h1
             className="rise-in font-display text-5xl leading-[1.02] font-semibold tracking-tight text-ink sm:text-6xl"
             style={{ "--rise-index": 0 } as React.CSSProperties}
@@ -91,10 +93,12 @@ export default function HomePage() {
               </a>
             ))}
           </div>
+          </div>
 
           {/* Work */}
           <section
-            className="rise-in mt-16"
+            id="work"
+            className="rise-in mt-16 scroll-mt-24"
             style={{ "--rise-index": 4 } as React.CSSProperties}
           >
             <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
@@ -126,7 +130,8 @@ export default function HomePage() {
           {/* Writing */}
           {recentPosts.length > 0 && (
             <section
-              className="rise-in mt-16"
+              id="writing"
+              className="rise-in mt-16 scroll-mt-24"
               style={{ "--rise-index": 5 } as React.CSSProperties}
             >
               <div className="flex items-baseline justify-between">
@@ -142,7 +147,7 @@ export default function HomePage() {
                   <li key={post.slug} className="border-b border-line">
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="group flex items-baseline gap-5 py-4"
+                      className="group flex items-baseline gap-5 py-4 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:translate-x-0.5 motion-reduce:transition-none"
                     >
                       <time
                         dateTime={post.date}
@@ -171,6 +176,16 @@ export default function HomePage() {
             <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
           </footer>
         </div>
+
+        <div className="rise-in sticky top-28 ml-auto hidden shrink-0 xl:block" style={{ "--rise-index": 3 } as React.CSSProperties}>
+          <SectionNav
+            sections={[
+              { id: "intro", label: "Intro" },
+              { id: "work", label: "Work" },
+              { id: "writing", label: "Writing" },
+            ]}
+          />
+        </div>
       </div>
 
       {/* Right: full-height assistant pane */}
@@ -178,7 +193,7 @@ export default function HomePage() {
         id="chat"
         className="h-[85dvh] border-t border-line lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:border-t-0 lg:border-l lg:border-line"
       >
-        <ChatPanel conceptCount={conceptMeta.length} concepts={conceptMeta} />
+        <ChatPanel concepts={conceptMeta} />
       </aside>
 
       <footer className="border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
