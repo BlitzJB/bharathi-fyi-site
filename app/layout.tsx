@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s · Joshua Bharathi",
   },
   description:
-    "Joshua Bharathi is a platform engineer turned AI engineer in Chennai. He builds LLM systems with infrastructure habits.",
+    "Joshua Bharathi is an AI engineer in Chennai with a platform engineering background. He builds AI systems that hold up in production.",
   openGraph: {
     siteName: "bharathi.fyi",
     type: "website",

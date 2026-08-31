@@ -18,9 +18,9 @@ sources:
 
 # Overview
 
-Joshua Bharathi (goes by **Bharathi**, online handle **BlitzJB**) is an
-engineer from Chennai, India. He calls himself a platform engineer turned AI
-engineer. He has shipped production software since 2022: a freelance studio
+Joshua Bharathi (goes by **Bharathi**, online handle **BlitzJB**) is an AI
+engineer from Chennai, India, with a platform engineering background. He has
+shipped production software since 2022: a freelance studio
 with more than twenty clients, backend internships, and event-streaming
 platform work at MotorQ. These days he builds AI systems, meaning agents,
 LLM-backed services, and the infrastructure around them.

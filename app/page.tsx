@@ -55,24 +55,24 @@ export default function HomePage() {
             className="rise-in font-display text-5xl leading-[1.02] font-semibold tracking-tight text-ink sm:text-6xl"
             style={{ "--rise-index": 0 } as React.CSSProperties}
           >
-            I make unreliable things dependable.
+            I build AI systems that hold up in production.
           </h1>
 
           <p
-            className="rise-in mt-8 max-w-[38ch] text-xl leading-snug font-medium text-ink"
+            className="rise-in mt-8 max-w-[40ch] text-xl leading-snug font-medium text-ink"
             style={{ "--rise-index": 1 } as React.CSSProperties}
           >
-            Hi, I&rsquo;m Joshua Bharathi, an engineer from Chennai. These
-            days I build with LLMs, after a few years of keeping backend
-            infrastructure alive.
+            Hi, I&rsquo;m Joshua Bharathi, an AI engineer from Chennai. I
+            build agents and the systems that keep LLM products running.
           </p>
 
           <p
-            className="rise-in mt-4 max-w-[44ch] leading-relaxed text-ink-soft"
+            className="rise-in mt-4 max-w-[46ch] leading-relaxed text-ink-soft"
             style={{ "--rise-index": 2 } as React.CSSProperties}
           >
-            It&rsquo;s the same job underneath: something unreliable at the
-            bottom of the stack, and people who need it to work anyway.
+            My background is platform engineering, and it shows: my AI work
+            always has a queue in front of the model and a plan for the
+            request that fails.
           </p>
 
           <div
