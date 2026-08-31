@@ -3,12 +3,6 @@ import { ChatPanel } from "@/components/chat/chat-panel";
 import { getAllPosts } from "@/lib/blog";
 import { countConcepts } from "@/lib/knowledge";
 
-const PROOF: Array<{ figure: string; detail: string }> = [
-  { figure: "2×", detail: "national hackathon wins, at IIT Madras and NIT Trichy" },
-  { figure: "0", detail: "downtime migrating MotorQ's customer-facing API to a new event queue" },
-  { figure: "20+", detail: "clients served as an independent consultant" },
-];
-
 const WORK: Array<{ year: string; org: string; role: string; line: string }> = [
   {
     year: "2025",
@@ -98,28 +92,10 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Proof strip */}
-          <dl
-            className="rise-in mt-16 border-t border-line-strong"
-            style={{ "--rise-index": 4 } as React.CSSProperties}
-          >
-            {PROOF.map((row) => (
-              <div
-                key={row.detail}
-                className="flex items-baseline gap-5 border-b border-line py-3.5"
-              >
-                <dt className="w-12 shrink-0 font-mono text-lg text-ink tabular-nums">
-                  {row.figure}
-                </dt>
-                <dd className="text-sm leading-snug">{row.detail}</dd>
-              </div>
-            ))}
-          </dl>
-
           {/* Work */}
           <section
             className="rise-in mt-16"
-            style={{ "--rise-index": 5 } as React.CSSProperties}
+            style={{ "--rise-index": 4 } as React.CSSProperties}
           >
             <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
               Work
@@ -151,7 +127,7 @@ export default function HomePage() {
           {recentPosts.length > 0 && (
             <section
               className="rise-in mt-16"
-              style={{ "--rise-index": 6 } as React.CSSProperties}
+              style={{ "--rise-index": 5 } as React.CSSProperties}
             >
               <div className="flex items-baseline justify-between">
                 <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
