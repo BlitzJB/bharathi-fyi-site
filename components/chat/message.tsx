@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 import type { ConceptMeta } from "@/lib/knowledge";
 import { ghostButton, iconSwap, iconSwapIn, iconSwapOut } from "./surfaces";
 import { CheckIcon, CopyIcon, RefreshIcon } from "./icons";
-import { StreamingText } from "./streaming-text";
 import { Citation, type Source } from "./inline-citation";
 
 export function messageText(message: UIMessage): string {
@@ -31,11 +30,15 @@ const CITE_RE = /\[cite:([\w./-]+)\]/g;
 function extractCitations(
   text: string,
   concepts: ConceptMeta[],
+  streaming: boolean,
 ): { processed: string; sources: Source[] } {
   const byId = new Map(concepts.map((c) => [c.id, c]));
   const order: string[] = [];
 
-  const processed = text
+  // While streaming, hide a citation marker that is still arriving.
+  const input = streaming ? text.replace(/\[cite:[^\]]*$/, "") : text;
+
+  const processed = input
     .replace(CITE_RE, (match, id: string) => {
       const concept = byId.get(id);
       if (!concept) return "";
@@ -82,8 +85,8 @@ export function ChatMessage({
 
   const { processed, sources } = useMemo(
     () =>
-      isAssistant && !streaming
-        ? extractCitations(text, concepts)
+      isAssistant
+        ? extractCitations(text, concepts, streaming)
         : { processed: text, sources: [] as Source[] },
     [isAssistant, streaming, text, concepts],
   );
@@ -110,10 +113,10 @@ export function ChatMessage({
 
   return (
     <div className="group/message flex flex-col items-start">
-      {streaming ? (
-        <StreamingText text={text} streaming />
-      ) : (
-        <div className="chat-markdown min-w-0 text-sm leading-relaxed">
+      <div
+        data-streaming={streaming || undefined}
+        className="chat-markdown min-w-0 text-sm leading-relaxed"
+      >
           <ReactMarkdown
             components={{
               a: ({ href, children }) => {
@@ -135,11 +138,10 @@ export function ChatMessage({
                 );
               },
             }}
-          >
-            {processed}
-          </ReactMarkdown>
-        </div>
-      )}
+        >
+          {processed}
+        </ReactMarkdown>
+      </div>
 
       {/* Action row: revealed on hover or focus, hidden while streaming */}
       {!streaming && (
