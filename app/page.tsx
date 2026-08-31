@@ -26,46 +26,57 @@ export default function HomePage() {
           </h1>
 
           <p
-            className="rise-in mt-7 max-w-[52ch] text-lg leading-relaxed"
+            className="rise-in mt-8 max-w-[38ch] text-xl leading-snug font-medium text-ink"
             style={{ "--rise-index": 1 } as React.CSSProperties}
           >
-            Hi, I&rsquo;m Joshua Bharathi, an engineer from Chennai. I spent
-            the last few years on backend infrastructure. Event queues and
-            monitoring at MotorQ, and before that, websites and internal
-            tools for about twenty freelance clients. These days I build with
-            LLMs. It&rsquo;s the same job underneath: something unreliable at
-            the bottom of the stack, and people who need it to work anyway.
+            Hi, I&rsquo;m Joshua Bharathi, an engineer from Chennai. These
+            days I build with LLMs, after a few years of keeping backend
+            infrastructure alive.
+          </p>
+
+          <p
+            className="rise-in mt-4 max-w-[44ch] leading-relaxed text-ink-soft"
+            style={{ "--rise-index": 2 } as React.CSSProperties}
+          >
+            It&rsquo;s the same job underneath: something unreliable at the
+            bottom of the stack, and people who need it to work anyway.
           </p>
 
           <div
-            className="rise-in mt-8 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm"
-            style={{ "--rise-index": 2 } as React.CSSProperties}
+            className="rise-in mt-9 flex flex-wrap items-baseline gap-x-7 gap-y-2 font-mono text-[13px]"
+            style={{ "--rise-index": 3 } as React.CSSProperties}
           >
-            <a
-              href="https://github.com/BlitzJB"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="u-link"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://www.linkedin.com/in/joshuabharathi/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="u-link"
-            >
-              LinkedIn
-            </a>
-            <a href="mailto:joshuabharathi2k4@gmail.com" className="u-link">
-              joshuabharathi2k4@gmail.com
-            </a>
+            {[
+              { label: "github", href: "https://github.com/BlitzJB" },
+              {
+                label: "linkedin",
+                href: "https://www.linkedin.com/in/joshuabharathi/",
+              },
+              { label: "email", href: "mailto:joshuabharathi2k4@gmail.com" },
+            ].map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                {...(link.href.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className="group text-ink-faint transition-colors hover:text-accent-ink"
+              >
+                {link.label}
+                <span
+                  aria-hidden
+                  className="ml-1 inline-block transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
+                >
+                  &#8599;
+                </span>
+              </a>
+            ))}
           </div>
 
           {/* Proof strip */}
           <dl
             className="rise-in mt-14 border-t border-line-strong"
-            style={{ "--rise-index": 3 } as React.CSSProperties}
+            style={{ "--rise-index": 4 } as React.CSSProperties}
           >
             {PROOF.map((row) => (
               <div
@@ -83,7 +94,7 @@ export default function HomePage() {
           {recentPosts.length > 0 && (
             <section
               className="rise-in mt-14"
-              style={{ "--rise-index": 4 } as React.CSSProperties}
+              style={{ "--rise-index": 5 } as React.CSSProperties}
             >
               <div className="flex items-baseline justify-between">
                 <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
