@@ -88,7 +88,7 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-x-hidden overflow-y-auto px-5 py-6 sm:px-6 lg:px-8"
+        className="flex-1 overflow-x-hidden overflow-y-auto px-5 py-6 sm:px-6 lg:px-8 lg:pt-14"
       >
         {messages.length === 0 ? (
           <div className="flex h-full max-w-[30rem] flex-col justify-center gap-8">

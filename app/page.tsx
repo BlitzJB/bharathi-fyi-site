@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChatPanel } from "@/components/chat/chat-panel";
+import { LanderChrome } from "@/components/lander-chrome";
 import { SectionNav } from "@/components/section-nav";
 import { SocialLinks } from "@/components/social-links";
 import { getAllPosts } from "@/lib/blog";
@@ -38,9 +39,20 @@ export default function HomePage() {
   const conceptMeta = listConceptMeta();
 
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,40%)] lg:px-8">
+    <main className="relative mx-auto w-full max-w-7xl flex-1 px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,40%)] lg:px-8">
+      <LanderChrome />
+
       {/* Left: scrolling column */}
-      <div className="py-16 lg:py-20 lg:pr-16">
+      <div className="pt-12 pb-16 lg:pt-14 lg:pr-16 lg:pb-20">
+        {/* Wordmark: hero-scale in flow, sticks and scales into the bar */}
+        <a
+          href="#intro"
+          className="wordmark-dock rise-in z-50 mb-12 inline-block font-mono text-[26px] leading-none text-ink"
+          style={{ "--rise-index": 0 } as React.CSSProperties}
+        >
+          bharathi<span className="text-ink-faint">.fyi</span>
+        </a>
+
         <div className="max-w-[38rem]">
           <div id="intro" className="scroll-mt-24">
           <h1
@@ -175,7 +187,7 @@ export default function HomePage() {
       {/* Right: full-height assistant pane */}
       <aside
         id="chat"
-        className="h-[85dvh] border-t border-line lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:border-t-0 lg:border-l lg:border-line"
+        className="h-[85dvh] border-t border-line lg:sticky lg:top-0 lg:h-dvh lg:border-t-0 lg:border-l lg:border-line"
       >
         <ChatPanel concepts={conceptMeta} />
       </aside>

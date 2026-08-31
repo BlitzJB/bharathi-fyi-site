@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteNav } from "@/components/site-nav";
 
 export const metadata: Metadata = {
   title: "Writing",
@@ -13,6 +14,7 @@ export default function BlogIndexPage() {
 
   return (
     <>
+    <SiteNav />
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16 sm:py-24">
       <header className="mb-12">
         <h1 className="font-display text-4xl font-semibold tracking-tight text-ink">

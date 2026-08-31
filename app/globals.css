@@ -69,6 +69,46 @@ h3 {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* --- Lander wordmark dock ----------------------------------------------- */
+
+/* The docking bar: invisible at rest, backdrop-blurred hairline bar once
+   the page scrolls. Purely visual; never intercepts input. */
+.lander-bar {
+  pointer-events: none;
+  opacity: 0;
+  background: color-mix(in srgb, var(--color-paper) 88%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-line);
+  transition: opacity 300ms var(--ease-out-strong);
+}
+
+html[data-lander-scrolled] .lander-bar {
+  opacity: 1;
+}
+
+/* The wordmark rides in normal flow at hero scale, sticks near the top of
+   the viewport, and scales down into the bar once scrolling starts. Sticky
+   does the positional work (compositor-smooth); only scale transitions.
+   26px at scale(0.538) lands at ~14px, vertically centered in the 48px bar. */
+.wordmark-dock {
+  position: sticky;
+  top: 17px;
+  transform-origin: left top;
+  transition: transform 350ms var(--ease-out-strong);
+}
+
+html[data-lander-scrolled] .wordmark-dock {
+  transform: scale(0.538);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lander-bar,
+  .wordmark-dock {
+    transition: none;
+  }
+}
+
 /* --- Scroll-entry reveal ------------------------------------------------ */
 
 @keyframes rise-in {
