@@ -69,10 +69,10 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
   return (
     <section
       aria-label="Ask Bharathi's assistant"
-      className="flex h-full flex-col bg-surface"
+      className="flex h-full flex-col"
     >
       {/* Title strip */}
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5 sm:px-6">
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-line px-5 sm:px-6 lg:px-8">
         <h2 className="font-mono text-xs text-ink">assistant</h2>
         <p className="font-mono text-[11px] text-ink-faint">
           grounded in <span className="text-accent-ink">.okf/</span> ·{" "}
@@ -81,7 +81,10 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
       </header>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6 sm:px-6">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-5 py-6 sm:px-6 lg:px-8"
+      >
         {messages.length === 0 ? (
           <div className="flex h-full max-w-[30rem] flex-col justify-center gap-10">
             <p className="text-[15px] leading-relaxed">
@@ -134,7 +137,7 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
       </div>
 
       {/* Composer */}
-      <div className="shrink-0 px-4 pb-4 sm:px-6 sm:pb-6">
+      <div className="shrink-0 px-4 pb-4 sm:px-6 sm:pb-6 lg:px-8">
         <form
           onSubmit={(e) => {
             e.preventDefault();

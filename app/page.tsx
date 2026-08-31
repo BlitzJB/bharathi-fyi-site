@@ -47,9 +47,9 @@ export default function HomePage() {
   const concepts = countConcepts();
 
   return (
-    <main className="flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,42%)]">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,40%)] lg:px-8">
       {/* Left: scrolling column */}
-      <div className="px-6 py-16 sm:px-10 lg:px-14 lg:py-24">
+      <div className="py-16 lg:py-20 lg:pr-16">
         <div className="max-w-[38rem]">
           <h1
             className="rise-in font-display text-5xl leading-[1.02] font-semibold tracking-tight text-ink sm:text-6xl"
@@ -195,7 +195,7 @@ export default function HomePage() {
       {/* Right: full-height assistant pane */}
       <aside
         id="chat"
-        className="h-[85dvh] border-t border-line lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:border-t-0 lg:border-l"
+        className="h-[85dvh] border-t border-line lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:border-t-0 lg:border-l lg:border-line"
       >
         <ChatPanel conceptCount={concepts} />
       </aside>
