@@ -4,9 +4,9 @@ import { getAllPosts } from "@/lib/blog";
 import { countConcepts } from "@/lib/knowledge";
 
 const PROOF: Array<{ figure: string; detail: string }> = [
-  { figure: "2×", detail: "national hackathon wins — IIT Madras, NIT Trichy" },
-  { figure: "0", detail: "downtime migrating MotorQ's customer-facing API" },
-  { figure: "20+", detail: "clients shipped for as a freelance founder" },
+  { figure: "2×", detail: "national hackathon wins, at IIT Madras and NIT Trichy" },
+  { figure: "0", detail: "downtime migrating MotorQ's customer-facing API to a new event queue" },
+  { figure: "20+", detail: "freelance clients before I turned 20" },
 ];
 
 export default function HomePage() {
@@ -29,10 +29,12 @@ export default function HomePage() {
             className="rise-in mt-7 max-w-[52ch] text-lg leading-relaxed"
             style={{ "--rise-index": 1 } as React.CSSProperties}
           >
-            Event pipelines and zero&#8209;downtime migrations yesterday;
-            agents, evals, and LLM systems today. I&rsquo;m Joshua Bharathi —
-            a platform engineer turned AI engineer in Chennai. The substrate
-            changed from cloud APIs to language models; the job didn&rsquo;t.
+            Hi, I&rsquo;m Joshua Bharathi, an engineer from Chennai. I spent
+            the last few years on backend infrastructure. Event queues and
+            monitoring at MotorQ, and before that, websites and internal
+            tools for about twenty freelance clients. These days I build with
+            LLMs. It&rsquo;s the same job underneath: something unreliable at
+            the bottom of the stack, and people who need it to work anyway.
           </p>
 
           <div
@@ -60,7 +62,7 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Proof strip — hairline ledger, not stat cards */}
+          {/* Proof strip */}
           <dl
             className="rise-in mt-14 border-t border-line-strong"
             style={{ "--rise-index": 3 } as React.CSSProperties}
@@ -115,7 +117,7 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Right: the grounded console — the signature element */}
+        {/* Right: the grounded console */}
         <div id="chat" className="rise-in lg:sticky lg:top-10" style={{ "--rise-index": 2 } as React.CSSProperties}>
           <ChatPanel conceptCount={concepts} />
         </div>

@@ -1,7 +1,7 @@
 ---
 type: Project
 title: KHackSim
-description: Realistic real-time car physics simulator for fleets of 1000+ vehicles, built on CARLA — winner of K!Hacks.
+description: Real-time car physics simulator for fleets of 1000+ vehicles, built on CARLA. Won K!Hacks.
 tags:
   - project
   - simulation
@@ -14,7 +14,7 @@ generated:
 sources:
   - id: resume-2025
     resource: 'résumé (LaTeX, provided by Joshua Bharathi, pre-AI-era snapshot)'
-    title: Joshua Bharathi — Résumé
+    title: Joshua Bharathi Résumé
     author: "human:joshua-bharathi"
 ---
 
@@ -26,7 +26,7 @@ using CARLA as the world simulator, with high-accuracy physics models and an
 interface layer that can emit telemetry to any downstream infrastructure.
 
 **Winner of K!Hacks** (state-level hackathon at CEG, Anna University),
-powered by MotorQ — the company Bharathi later interned at.
+powered by MotorQ, the company Bharathi later interned at.
 
 # Stack
 
@@ -34,10 +34,10 @@ Next.js, CARLA, Python, MATLAB, physics modeling.
 
 # Why it matters
 
-It's the platform-engineering instinct applied to simulation: not one car
-driving prettily, but a thousand emitting realistic telemetry into real
-fleet infrastructure — the kind of load- and integration-shaped thinking
-that later showed up in his MotorQ event-streaming work.
+Most hackathon simulators show one car driving around. This one pushed
+realistic telemetry from a thousand cars into real fleet infrastructure.
+That kind of load thinking later showed up in his MotorQ event-streaming
+work.
 
 # Related
 

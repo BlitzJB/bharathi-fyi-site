@@ -2,7 +2,7 @@
 okf_version: '0.2'
 ---
 
-# Bharathi — Portfolio Knowledgebase
+# Bharathi's Portfolio Knowledgebase
 
 The knowledge that grounds the AI assistant on [bharathi.fyi](https://bharathi.fyi).
 

@@ -22,11 +22,11 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   metadataBase: new URL("https://bharathi.fyi"),
   title: {
-    default: "Joshua Bharathi — Platform engineer turned AI engineer",
-    template: "%s — Joshua Bharathi",
+    default: "Joshua Bharathi",
+    template: "%s · Joshua Bharathi",
   },
   description:
-    "Platform engineer turned AI engineer. Event pipelines and zero-downtime migrations yesterday; agents, evals, and LLM systems today.",
+    "Joshua Bharathi is a platform engineer turned AI engineer in Chennai. He builds LLM systems with infrastructure habits.",
   openGraph: {
     siteName: "bharathi.fyi",
     type: "website",

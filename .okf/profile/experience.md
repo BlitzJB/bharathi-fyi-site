@@ -12,13 +12,13 @@ generated:
 sources:
   - id: resume-2025
     resource: 'résumé (LaTeX, provided by Joshua Bharathi, pre-AI-era snapshot)'
-    title: Joshua Bharathi — Résumé
+    title: Joshua Bharathi Résumé
     author: "human:joshua-bharathi"
 ---
 
 # Roles
 
-## MotorQ — SDE Intern (May 2025 – July 2025, Chennai, on-site)
+## MotorQ, SDE Intern (May 2025 to July 2025, Chennai, on-site)
 
 - **Event queue platform modernization**: evaluated and benchmarked Apache
   Pulsar; designed an Event Queue Abstraction (EQA) layer making the stack
@@ -30,7 +30,7 @@ sources:
   multi-tenant VMRules with dynamic thresholds; implemented a GitOps-based
   rule-regeneration pipeline and testing framework.
 
-## Miniture — SDE Intern (July 2024 – Sept 2024, Chennai, hybrid)
+## Miniture, SDE Intern (July 2024 to Sept 2024, Chennai, hybrid)
 
 - Developed and maintained backend services: notification service, data
   ingest utilities, downstream analytics, and internal automations.
@@ -38,7 +38,7 @@ sources:
   owning a significant portion of the codebase and iterating on user feedback
   for product-market fit.
 
-## Dexio Designs — SDE Intern (Mar 2024 – Jun 2024, Chennai, on-site)
+## Dexio Designs, SDE Intern (Mar 2024 to Jun 2024, Chennai, on-site)
 
 - Led the redesign of the company website with complex animations while
   keeping accessibility and usability intact; integrated webhooks for instant
@@ -46,7 +46,7 @@ sources:
 - Scaffolded and built core functionality for a Miniture project while
   attached to their team, working closely with Dexio's designers.
 
-## Blitz Design and Development — Founder & Full-Stack Developer (Nov 2022 – Mar 2024, self-employed)
+## Blitz Design and Development, Founder and Full-Stack Developer (Nov 2022 to Mar 2024, self-employed)
 
 - Built traffic-bearing backends for public-facing applications (e-commerce)
   and robust internal software: billing, HR utilities, automations, CRMs,
@@ -56,12 +56,12 @@ sources:
 
 # Education
 
-**Shiv Nadar University Chennai** — B.Tech, Artificial Intelligence & Data
+**Shiv Nadar University Chennai**: B.Tech, Artificial Intelligence & Data
 Science (Sept 2022 – Apr 2026), CGPA 8.00. President of the SNUC Coding Club;
 founder and core member of the Delta Hackathon Team; Instincts (annual
 cultural fest) website team; technical lead on the Business Club core
-committee. STIRS 2023 awardee — project selected for funded university
-research (1 of 12).
+committee. STIRS 2023 awardee: his project was 1 of 12 selected for funded
+university research.
 
 # Related
 

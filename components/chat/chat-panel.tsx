@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "./message";
 
 const STARTERS = [
-  "What has Bharathi actually shipped?",
-  "Why platform engineering, then AI?",
-  "What happened at MotorQ?",
-  "How do I get in touch?",
+  "What has he actually built?",
+  "Why move from infra to AI?",
+  "What did he do at MotorQ?",
+  "How do I reach him?",
 ];
 
 export function ChatPanel({ conceptCount }: { conceptCount: number }) {
@@ -52,9 +52,9 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
         {messages.length === 0 ? (
           <div className="flex h-full flex-col justify-between">
             <p className="max-w-[38ch] text-sm leading-relaxed">
-              Every answer comes from a knowledgebase checked into this
-              site&rsquo;s repo — not the open internet. Ask about the work,
-              the switch to AI, or how to reach him.
+              This assistant answers from a knowledgebase I keep in the
+              site&rsquo;s repo. If something isn&rsquo;t in there, it says
+              so instead of guessing. Ask it what you&rsquo;d ask me.
             </p>
             <ul className="border-t border-line">
               {STARTERS.map((starter) => (
@@ -88,7 +88,7 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
             )}
             {error && (
               <p className="border-l-2 border-accent pl-3 text-xs text-ink-soft">
-                Something went wrong — try again in a moment.
+                Something broke. Try again in a bit.
               </p>
             )}
           </>

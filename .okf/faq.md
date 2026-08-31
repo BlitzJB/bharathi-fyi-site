@@ -27,7 +27,7 @@ Chennai, India. He has worked on-site, hybrid, and remote.
 
 ## Is Bharathi open to new opportunities?
 
-> TODO(bharathi): e.g. "Yes — open to AI engineering roles" or "Happy where I
+> TODO(bharathi): e.g. "Yes, open to AI engineering roles" or "Happy where I
 > am, but always up for interesting conversations."
 
 ## What kind of work is Bharathi looking for?
@@ -36,7 +36,7 @@ Chennai, India. He has worked on-site, hybrid, and remote.
 
 ## Can I see a résumé/CV?
 
-There's no hosted PDF on the site yet — the [experience](/profile/experience.md)
+There's no hosted PDF on the site yet. The [experience](/profile/experience.md)
 and [projects](/projects/index.md) concepts are the canonical record, and a
 résumé is available on request by email.
 

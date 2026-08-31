@@ -22,9 +22,9 @@ assistant can say; whatever is missing, it should decline to invent.
 
 - One concept per file; the path (minus `.md`) is the concept ID.
 - Every concept needs frontmatter with a non-empty `type`. Add `title`,
-  `description`, and `tags` — the compiler surfaces them to the model.
+  `description`, and `tags`, since the compiler surfaces them to the model.
 - Concepts still carrying `TODO(bharathi)` markers are `status: draft`.
-  Flip to `status: stable` (or just remove the line — absent means stable)
+  Flip to `status: stable` (or just remove the line; absent means stable)
   once the content is real.
 - Mark outdated concepts `status: deprecated` instead of deleting them; the
   site compiler skips deprecated concepts.
@@ -33,7 +33,7 @@ assistant can say; whatever is missing, it should decline to invent.
 
 # Map
 
-- [profile/about](/profile/about.md) — bio, skills, links
-- [profile/journey](/profile/journey.md) — the platform→AI story
-- [projects/](/projects/index.md) — one concept per project
-- [faq](/faq.md) — canonical answers for common visitor questions
+- [profile/about](/profile/about.md): bio, skills, links
+- [profile/journey](/profile/journey.md): the platform→AI story
+- [projects/](/projects/index.md): one concept per project
+- [faq](/faq.md): canonical answers for common visitor questions

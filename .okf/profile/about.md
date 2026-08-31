@@ -1,7 +1,7 @@
 ---
 type: Person
 title: About Joshua Bharathi
-description: Who Joshua Bharathi is — platform-minded engineer moving into AI engineering — skills, education, and how to reach him.
+description: Who Joshua Bharathi is, what he can do, and how to reach him.
 tags:
   - profile
   - positioning
@@ -12,28 +12,27 @@ generated:
 sources:
   - id: resume-2025
     resource: 'résumé (LaTeX, provided by Joshua Bharathi, pre-AI-era snapshot)'
-    title: Joshua Bharathi — Résumé
+    title: Joshua Bharathi Résumé
     author: "human:joshua-bharathi"
 ---
 
 # Overview
 
 Joshua Bharathi (goes by **Bharathi**, online handle **BlitzJB**) is an
-engineer from Chennai, India, positioning as a **platform engineer turned AI
-engineer**. He has been shipping production software since 2022 — first as a
-freelance founder serving 20+ clients, then through backend/platform
-internships, most recently doing event-streaming platform work at MotorQ —
-and now focuses on AI systems: agents, LLM-backed services, and the
-infrastructure around them.
+engineer from Chennai, India. He calls himself a platform engineer turned AI
+engineer. He has shipped production software since 2022: a freelance studio
+with more than twenty clients, backend internships, and event-streaming
+platform work at MotorQ. These days he builds AI systems, meaning agents,
+LLM-backed services, and the infrastructure around them.
 
-He holds a B.Tech in **Artificial Intelligence & Data Science** from Shiv
-Nadar University Chennai (Sept 2022 – Apr 2026, CGPA 8.00), where he was
+He holds a B.Tech in Artificial Intelligence & Data Science from Shiv Nadar
+University Chennai (Sept 2022 to Apr 2026, CGPA 8.00), where he was
 President of the SNUC Coding Club, founder of the Delta Hackathon Team, and
 technical lead in the Business Club.[^resume-2025]
 
-He has an unusually strong competitive record: multiple **national hackathon
-wins** including IIT Madras's IndustryAI (500+ teams) and NIT Trichy's Aurigo
-hackathon (800+ teams) — see [awards](/profile/awards.md).
+He has won national hackathons more than once, including IIT Madras's
+IndustryAI (500+ teams) and NIT Trichy's Aurigo hackathon (800+ teams). See
+[awards](/profile/awards.md).
 
 # Skills
 

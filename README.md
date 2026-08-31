@@ -1,6 +1,6 @@
 # bharathi.fyi
 
-Personal site for Bharathi — platform engineer turned AI engineer. Next.js
+Personal site for Bharathi: platform engineer turned AI engineer. Next.js
 App Router, an MDX blog, and a landing-page AI assistant grounded in a
 curated knowledgebase.
 
@@ -11,7 +11,7 @@ curated knowledgebase.
 | Landing page | `app/page.tsx` | Split hero: positioning left, chat right |
 | Blog | `content/blog/*.mdx` + `app/blog/` | File-based, frontmatter-driven |
 | Chat API | `app/api/chat/route.ts` | Vercel AI SDK `streamText` via AI Gateway |
-| Knowledgebase | `.okf/` | OKF v0.2 bundle — the chat's single source of truth |
+| Knowledgebase | `.okf/` | OKF v0.2 bundle: the chat's single source of truth |
 | KB compiler | `lib/knowledge.ts` | Folds the bundle into the model's system prompt |
 
 ## Local development
@@ -65,10 +65,11 @@ once per server instance, so redeploy after KB changes.
 
 The chat route caps input length, history depth, and output tokens. For a
 high-traffic site, add rate limiting (Vercel WAF or middleware) on
-`/api/chat` — it spends your gateway credits.
+`/api/chat`: it spends your gateway credits.
 
 ## Remaining personalization
 
-Search the repo for `TODO(bharathi)`: real bio/projects in `.okf/`, social
-links in `components/site-footer.tsx` and `app/page.tsx`, and replace the
-starter post in `content/blog/`.
+Search the repo for `TODO(bharathi)`. What's left: the AI-era chapter in
+`.okf/profile/journey.md` (the résumé was pre-AI, so the assistant says
+details are coming soon) and your preferences in `.okf/faq.md` (open to
+work, what kind of roles).

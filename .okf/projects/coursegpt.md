@@ -1,7 +1,7 @@
 ---
 type: Project
 title: CourseGPT
-description: GenAI platform for generating large, structured courses — runner-up at Envision '23.
+description: GenAI platform for generating large, structured courses. Runner-up at Envision '23.
 tags:
   - project
   - genai
@@ -14,7 +14,7 @@ generated:
 sources:
   - id: resume-2025
     resource: 'résumé (LaTeX, provided by Joshua Bharathi, pre-AI-era snapshot)'
-    title: Joshua Bharathi — Résumé
+    title: Joshua Bharathi Résumé
     author: "human:joshua-bharathi"
 ---
 
@@ -39,9 +39,9 @@ React, Python, Llama 2, Azure, Tesseract, Flask, SSE.
 
 # Why it matters
 
-This is early evidence of the AI-engineering direction: not a thin prompt
-wrapper, but an LLM feature engineered like infrastructure — queued,
-loss-proof, streaming. It predates the current LLM tooling wave.
+He was engineering LLM features like infrastructure back in 2023, before
+most of the current tooling existed. The generation pipeline had a queue so
+it never lost a request, and it streamed results as they came.
 
 # Related
 

@@ -4,7 +4,7 @@ import { getAllPosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Writing",
-  description: "Notes on platform engineering, AI systems, and the space between.",
+  description: "Notes from building infrastructure, and now AI systems.",
 };
 
 export default function BlogIndexPage() {
@@ -17,7 +17,7 @@ export default function BlogIndexPage() {
           Writing
         </h1>
         <p className="mt-3 max-w-[52ch]">
-          Notes on platform engineering, AI systems, and the space between.
+          Notes from building infrastructure, and now AI systems.
         </p>
       </header>
 

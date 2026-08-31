@@ -28,9 +28,9 @@ export function GET() {
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Bharathi — Writing</title>
+    <title>Writing by Joshua Bharathi</title>
     <link>${BASE_URL}/blog</link>
-    <description>Notes on platform engineering, AI systems, and the space between.</description>
+    <description>Notes from building infrastructure, and now AI systems.</description>
     <language>en</language>
 ${items}
   </channel>
