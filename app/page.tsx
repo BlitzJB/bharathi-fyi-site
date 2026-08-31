@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChatPanel } from "@/components/chat/chat-panel";
 import { getAllPosts } from "@/lib/blog";
 import { listConceptMeta } from "@/lib/knowledge";
-import { resolveChatModels } from "@/lib/model";
+import { CHAT_MODEL } from "@/lib/model";
 
 const WORK: Array<{ year: string; org: string; role: string; line: string }> = [
   {
@@ -37,10 +37,9 @@ const LINKS = [
   { label: "email", href: "mailto:joshuabharathi2k4@gmail.com" },
 ];
 
-export default async function HomePage() {
+export default function HomePage() {
   const recentPosts = getAllPosts().slice(0, 4);
   const conceptMeta = listConceptMeta();
-  const { primary } = await resolveChatModels();
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,40%)] lg:px-8">
@@ -183,7 +182,7 @@ export default async function HomePage() {
         <ChatPanel
           conceptCount={conceptMeta.length}
           concepts={conceptMeta}
-          model={primary}
+          model={CHAT_MODEL}
         />
       </aside>
 
