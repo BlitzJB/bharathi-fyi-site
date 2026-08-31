@@ -175,7 +175,7 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
                 autoresize();
               }}
               onSubmit={() => submit(input)}
-              placeholder="Ask about Bharathi's work&hellip;"
+              placeholder="Ask more about Joshua's work"
               maxLength={2000}
               aria-label="Your question"
               className="max-h-40"

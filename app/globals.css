@@ -90,16 +90,17 @@ html[data-lander-scrolled] .lander-bar {
 /* The wordmark rides in normal flow at hero scale, sticks near the top of
    the viewport, and scales down into the bar once scrolling starts. Sticky
    does the positional work (compositor-smooth); only scale transitions.
-   26px at scale(0.538) lands at ~14px, vertically centered in the 48px bar. */
+   20px at scale(0.7) lands at 14px, sitting slightly high in the 48px bar
+   so the docked mark keeps extra breathing room below. */
 .wordmark-dock {
   position: sticky;
-  top: 17px;
+  top: 15px;
   transform-origin: left top;
   transition: transform 350ms var(--ease-out-strong);
 }
 
 html[data-lander-scrolled] .wordmark-dock {
-  transform: scale(0.538);
+  transform: scale(0.7);
 }
 
 @media (prefers-reduced-motion: reduce) {
