@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChatPanel } from "@/components/chat/chat-panel";
 import { SectionNav } from "@/components/section-nav";
+import { SocialLinks } from "@/components/social-links";
 import { getAllPosts } from "@/lib/blog";
 import { listConceptMeta } from "@/lib/knowledge";
 
@@ -31,11 +32,6 @@ const WORK: Array<{ year: string; org: string; role: string; line: string }> = [
   },
 ];
 
-const LINKS = [
-  { label: "github", href: "https://github.com/BlitzJB" },
-  { label: "linkedin", href: "https://www.linkedin.com/in/joshuabharathi/" },
-  { label: "email", href: "mailto:joshuabharathi2k4@gmail.com" },
-];
 
 export default function HomePage() {
   const recentPosts = getAllPosts().slice(0, 4);
@@ -71,27 +67,10 @@ export default function HomePage() {
           </p>
 
           <div
-            className="rise-in mt-9 flex flex-wrap items-baseline gap-x-7 gap-y-2 font-mono text-[13px]"
+            className="rise-in mt-9"
             style={{ "--rise-index": 3 } as React.CSSProperties}
           >
-            {LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                {...(link.href.startsWith("http")
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                className="group text-ink-faint transition-colors hover:text-accent-ink"
-              >
-                {link.label}
-                <span
-                  aria-hidden
-                  className="ml-1 inline-block transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
-                >
-                  &#8599;
-                </span>
-              </a>
-            ))}
+            <SocialLinks className="gap-x-7 gap-y-2 text-[13px]" />
           </div>
           </div>
 
@@ -174,20 +153,7 @@ export default function HomePage() {
               to the bottom edge on desktop */}
           <footer className="mt-20 hidden flex-wrap items-baseline justify-between gap-3 border-t border-line pt-6 font-mono text-xs text-ink-faint lg:flex">
             <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
-            <div className="flex gap-6">
-              {LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  {...(link.href.startsWith("http")
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  className="transition-colors hover:text-accent-ink"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
+            <SocialLinks className="gap-6 text-xs" />
           </footer>
         </div>
       </div>
@@ -216,20 +182,7 @@ export default function HomePage() {
 
       <footer className="flex flex-wrap items-baseline justify-between gap-3 border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
         <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
-        <div className="flex gap-6">
-          {LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              {...(link.href.startsWith("http")
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-              className="transition-colors hover:text-accent-ink"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
+        <SocialLinks className="gap-6 text-xs" />
       </footer>
 
       {/* End-of-page sentinel for the section rail's bottom pin */}

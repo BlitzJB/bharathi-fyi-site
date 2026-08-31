@@ -109,15 +109,17 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
                     <button
                       type="button"
                       onClick={() => submit(starter)}
-                      className="group flex w-full items-baseline gap-3 py-3 text-left text-[15px] text-ink-soft transition-[color,transform] duration-150 hover:translate-x-0.5 hover:text-ink"
+                      className="group -mx-3 flex w-[calc(100%+1.5rem)] items-baseline gap-3 rounded-lg px-3 py-3 text-left text-[15px] text-ink-soft transition-[background-color,color,scale] duration-150 hover:bg-ink/[0.035] hover:text-ink active:scale-[0.99] motion-reduce:transition-none"
                     >
                       <span
                         aria-hidden
-                        className="font-mono text-xs text-ink-faint transition-colors group-hover:text-accent-ink"
+                        className="inline-block font-mono text-xs text-ink-faint transition-[translate,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-1 group-hover:text-accent-ink motion-reduce:transition-none"
                       >
                         &rarr;
                       </span>
-                      {starter}
+                      <span className="transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5 motion-reduce:transition-none">
+                        {starter}
+                      </span>
                     </button>
                   </li>
                 ))}
