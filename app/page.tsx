@@ -6,7 +6,7 @@ import { countConcepts } from "@/lib/knowledge";
 const PROOF: Array<{ figure: string; detail: string }> = [
   { figure: "2×", detail: "national hackathon wins, at IIT Madras and NIT Trichy" },
   { figure: "0", detail: "downtime migrating MotorQ's customer-facing API to a new event queue" },
-  { figure: "20+", detail: "freelance clients before I turned 20" },
+  { figure: "20+", detail: "clients served as an independent consultant" },
 ];
 
 const WORK: Array<{ year: string; org: string; role: string; line: string }> = [
@@ -70,9 +70,8 @@ export default function HomePage() {
             className="rise-in mt-4 max-w-[46ch] leading-relaxed text-ink-soft"
             style={{ "--rise-index": 2 } as React.CSSProperties}
           >
-            My background is platform engineering, and it shows: my AI work
-            always has a queue in front of the model and a plan for the
-            request that fails.
+            I come from platform engineering, and I hold AI systems to the
+            same standard as any other production infrastructure.
           </p>
 
           <div
