@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# bharathi.fyi
 
-## Getting Started
+Personal site for Bharathi — platform engineer turned AI engineer. Next.js
+App Router, an MDX blog, and a landing-page AI assistant grounded in a
+curated knowledgebase.
 
-First, run the development server:
+## How it fits together
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+| Piece | Where | Notes |
+|---|---|---|
+| Landing page | `app/page.tsx` | Split hero: positioning left, chat right |
+| Blog | `content/blog/*.mdx` + `app/blog/` | File-based, frontmatter-driven |
+| Chat API | `app/api/chat/route.ts` | Vercel AI SDK `streamText` via AI Gateway |
+| Knowledgebase | `.okf/` | OKF v0.2 bundle — the chat's single source of truth |
+| KB compiler | `lib/knowledge.ts` | Folds the bundle into the model's system prompt |
+
+## Local development
+
+```sh
+pnpm install
+cp .env.example .env.local   # add your AI_GATEWAY_API_KEY
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Everything except chat answers works without the key; without it the chat
+shows a friendly error when asked.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Writing a post
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Add `content/blog/my-post.mdx`:
 
-## Learn More
+```yaml
+---
+title: "My post"
+date: 2026-09-01
+description: "One-sentence summary shown in lists and meta tags."
+tags: [ai-engineering]
+draft: false        # true hides it in production builds
+---
+```
 
-To learn more about Next.js, take a look at the following resources:
+The slug is the filename. Code blocks are highlighted with Shiki
+(`vitesse-light`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Editing what the assistant knows
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The assistant answers **only** from `.okf/`. Each markdown file there is one
+concept with YAML frontmatter (`type` is required). Workflow:
 
-## Deploy on Vercel
+1. Edit or add a concept (see `.okf/getting-started.md` for conventions).
+2. Replace `TODO(bharathi)` markers with real content and flip
+   `status: draft` to stable (or remove the line).
+3. Update `.okf/index.md` and add a dated entry to `.okf/log.md`.
+4. Concepts marked `status: deprecated` are excluded from the prompt.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+In dev the bundle is re-read on every request; in production it's compiled
+once per server instance, so redeploy after KB changes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploying (Vercel)
+
+1. Push to GitHub, import the repo in Vercel.
+2. Enable AI Gateway on the project (chat auth is automatic via OIDC), or set
+   `AI_GATEWAY_API_KEY` as an environment variable.
+3. Optionally set `CHAT_MODEL` (defaults to `openai/gpt-oss-120b`).
+
+The chat route caps input length, history depth, and output tokens. For a
+high-traffic site, add rate limiting (Vercel WAF or middleware) on
+`/api/chat` — it spends your gateway credits.
+
+## Remaining personalization
+
+Search the repo for `TODO(bharathi)`: real bio/projects in `.okf/`, social
+links in `components/site-footer.tsx` and `app/page.tsx`, and replace the
+starter post in `content/blog/`.
