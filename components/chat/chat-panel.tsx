@@ -40,6 +40,10 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const busy = status === "submitted" || status === "streaming";
+  const lastMessage = messages[messages.length - 1];
+  const answerVisible =
+    lastMessage?.role === "assistant" &&
+    lastMessage.parts.some((p) => p.type === "text" && p.text.length > 0);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -120,7 +124,7 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
-            {status === "submitted" && (
+            {busy && !answerVisible && (
               <p className="font-mono text-xs text-ink-faint">
                 <span className="inline-block animate-pulse">
                   reading the knowledgebase&hellip;
