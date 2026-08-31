@@ -2,7 +2,12 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
-import { ChatMessage } from "./message";
+import { cn } from "@/lib/utils";
+import { ChatMessage, messageText } from "./message";
+import { ThinkingIndicator } from "./thinking-indicator";
+import { ErrorState } from "./error-state";
+import { iconSwap, iconSwapIn, iconSwapOut } from "./surfaces";
+import { ArrowUpIcon, SquareIcon } from "./icons";
 
 const STARTERS = [
   "What has he actually built?",
@@ -11,44 +16,34 @@ const STARTERS = [
   "How do I reach him?",
 ];
 
-function SendIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path
-        d="M8 12.5v-9M4 7l4-3.5L12 7"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function StopIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-      <rect x="4.5" y="4.5" width="7" height="7" rx="1" fill="currentColor" />
-    </svg>
-  );
-}
-
 export function ChatPanel({ conceptCount }: { conceptCount: number }) {
-  const { messages, sendMessage, status, error, stop } = useChat();
+  const { messages, sendMessage, status, error, stop, regenerate, clearError } =
+    useChat();
   const [input, setInput] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const [retryRequested, setRetryRequested] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const busy = status === "submitted" || status === "streaming";
   const lastMessage = messages[messages.length - 1];
   const answerVisible =
-    lastMessage?.role === "assistant" &&
-    lastMessage.parts.some((p) => p.type === "text" && p.text.length > 0);
+    lastMessage?.role === "assistant" && messageText(lastMessage).length > 0;
+  const thinking = busy && !answerVisible;
 
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, status]);
+
+  // Elapsed seconds while the model is thinking, shown by the indicator.
+  useEffect(() => {
+    if (!thinking) return;
+    const id = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [thinking]);
+
+  const retrying = retryRequested && busy;
 
   function autoresize() {
     const el = textareaRef.current;
@@ -65,10 +60,21 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
   function submit(text: string) {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
+    clearError();
+    setRetryRequested(false);
+    setElapsed(0);
     sendMessage({ text: trimmed });
     setInput("");
     requestAnimationFrame(autoresize);
   }
+
+  function retry() {
+    setRetryRequested(true);
+    setElapsed(0);
+    regenerate();
+  }
+
+  const hasText = input.trim().length > 0;
 
   return (
     <section
@@ -91,16 +97,28 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
       >
         {messages.length === 0 ? (
           <div className="flex h-full max-w-[30rem] flex-col justify-center gap-10">
-            <p className="text-[15px] leading-relaxed">
+            <p
+              className="rise-in text-[15px] leading-relaxed"
+              style={{ "--rise-index": 0 } as React.CSSProperties}
+            >
               This assistant answers from a knowledgebase I keep in the
               site&rsquo;s repo. If something isn&rsquo;t in there, it says so
               instead of guessing. Ask it what you&rsquo;d ask me.
             </p>
             <div>
-              <p className="font-mono text-[11px] text-ink-faint">try asking</p>
+              <p
+                className="rise-in font-mono text-[11px] text-ink-faint"
+                style={{ "--rise-index": 1 } as React.CSSProperties}
+              >
+                try asking
+              </p>
               <ul className="mt-2 divide-y divide-line">
-                {STARTERS.map((starter) => (
-                  <li key={starter}>
+                {STARTERS.map((starter, index) => (
+                  <li
+                    key={starter}
+                    className="rise-in"
+                    style={{ "--rise-index": index + 2 } as React.CSSProperties}
+                  >
                     <button
                       type="button"
                       onClick={() => submit(starter)}
@@ -121,20 +139,35 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
           </div>
         ) : (
           <div className="mx-auto max-w-[36rem] space-y-5">
-            {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
-            {busy && !answerVisible && (
-              <p className="font-mono text-xs text-ink-faint">
-                <span className="inline-block animate-pulse">
-                  reading the knowledgebase&hellip;
-                </span>
-              </p>
+            {messages.map((message, index) => {
+              const isLast = index === messages.length - 1;
+              return (
+                <ChatMessage
+                  key={message.id}
+                  message={message}
+                  streaming={busy && isLast && message.role === "assistant"}
+                  onRegenerate={
+                    !busy && isLast && message.role === "assistant"
+                      ? retry
+                      : undefined
+                  }
+                  regenerating={retrying}
+                />
+              );
+            })}
+            {thinking && (
+              <ThinkingIndicator
+                label="Reading the knowledgebase"
+                elapsed={elapsed > 0 ? `${elapsed}s` : undefined}
+              />
             )}
-            {error && (
-              <p className="border-l-2 border-accent pl-3 text-xs text-ink-soft">
-                Something broke. Try again in a bit.
-              </p>
+            {error && !busy && (
+              <ErrorState
+                title="The assistant hit a snag"
+                detail="The model request failed. This is usually transient."
+                retrying={retrying}
+                onRetry={retry}
+              />
             )}
           </div>
         )}
@@ -158,39 +191,39 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
               autoresize();
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                submit(input);
-              }
+              if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing)
+                return;
+              e.preventDefault();
+              submit(input);
             }}
             placeholder="Ask about Bharathi's work&hellip;"
             maxLength={2000}
             aria-label="Your question"
-            className="max-h-40 w-full resize-none overflow-y-hidden bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
+            className="max-h-40 w-full resize-none overflow-y-hidden bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed text-ink caret-accent placeholder:text-ink-faint focus:outline-none"
           />
           <div className="flex items-center justify-between px-3 pb-2.5 pl-4">
             <p className="hidden font-mono text-[11px] text-ink-faint select-none sm:block">
               &#9166; send&ensp;&#8679;&#9166; new line
             </p>
-            {busy ? (
-              <button
-                type="button"
-                onClick={() => stop()}
-                aria-label="Stop generating"
-                className="pressable flex size-8 items-center justify-center rounded-lg bg-ink text-paper transition-colors hover:bg-ink-soft"
-              >
-                <StopIcon />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                aria-label="Send message"
-                className="pressable flex size-8 items-center justify-center rounded-lg bg-ink text-paper transition-[background-color,opacity] hover:bg-ink-soft disabled:cursor-default disabled:bg-line-strong disabled:text-surface"
-              >
-                <SendIcon />
-              </button>
-            )}
+            <button
+              type={busy ? "button" : "submit"}
+              onClick={busy ? () => stop() : undefined}
+              disabled={!busy && !hasText}
+              aria-label={busy ? "Stop generating" : "Send message"}
+              className={cn(
+                "pressable grid size-8 place-items-center rounded-lg transition-colors duration-150",
+                busy || hasText
+                  ? "bg-ink text-paper hover:bg-ink-soft"
+                  : "cursor-default bg-ink/[0.06] text-ink-faint/60",
+              )}
+            >
+              <ArrowUpIcon
+                className={cn(iconSwap, "size-4", busy ? iconSwapOut : iconSwapIn)}
+              />
+              <SquareIcon
+                className={cn(iconSwap, "size-4", busy ? iconSwapIn : iconSwapOut)}
+              />
+            </button>
           </div>
         </form>
       </div>
