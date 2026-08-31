@@ -29,6 +29,23 @@ export type ResolvedModels = {
 let cache: { value: ResolvedModels; at: number } | null = null;
 const TTL_MS = 10 * 60 * 1000;
 
+// Models that recently failed to serve (rate limits, outages). They are
+// skipped as free candidates until the penalty expires, so later requests
+// don't pay the failed-first-attempt latency. The paid anchor is exempt.
+const failedUntil = new Map<string, number>();
+const FAILURE_PENALTY_MS = 10 * 60 * 1000;
+
+export function reportModelFailure(model: string) {
+  if (model === PAID_MODEL) return;
+  failedUntil.set(model, Date.now() + FAILURE_PENALTY_MS);
+  cache = null;
+}
+
+function isHealthy(model: string): boolean {
+  const until = failedUntil.get(model);
+  return until === undefined || until < Date.now();
+}
+
 export async function resolveChatModels(): Promise<ResolvedModels> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.value;
 
@@ -69,8 +86,9 @@ export async function resolveChatModels(): Promise<ResolvedModels> {
             // Tie-break toward the newer model name (e.g. m3 over m2.7).
             return priceDiff !== 0 ? priceDiff : b.id.localeCompare(a.id);
           })
-          .slice(0, MAX_FREE_CANDIDATES)
-          .map((m) => m.id);
+          .map((m) => m.id)
+          .filter(isHealthy)
+          .slice(0, MAX_FREE_CANDIDATES);
 
         if (smartFree.length > 0) {
           resolved = {
