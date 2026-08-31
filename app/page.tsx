@@ -44,7 +44,7 @@ export default function HomePage() {
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(24rem,40%)] lg:px-8">
       {/* Left: scrolling column */}
-      <div className="py-16 lg:flex lg:items-start lg:gap-12 lg:py-20 lg:pr-14">
+      <div className="py-16 lg:py-20 lg:pr-16">
         <div className="max-w-[38rem]">
           <div id="intro" className="scroll-mt-24">
           <h1
@@ -176,16 +176,20 @@ export default function HomePage() {
             <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
           </footer>
         </div>
+      </div>
 
-        <div className="rise-in sticky top-28 hidden shrink-0 xl:block" style={{ "--rise-index": 3 } as React.CSSProperties}>
-          <SectionNav
-            sections={[
-              { id: "intro", label: "Intro" },
-              { id: "work", label: "Work" },
-              { id: "writing", label: "Writing" },
-            ]}
-          />
-        </div>
+      {/* Section rail: hugs the viewport's left edge on wide screens */}
+      <div
+        className="rise-in fixed top-1/2 left-6 z-30 hidden -translate-y-1/2 2xl:block"
+        style={{ "--rise-index": 3 } as React.CSSProperties}
+      >
+        <SectionNav
+          sections={[
+            { id: "intro", label: "Intro" },
+            { id: "work", label: "Work" },
+            { id: "writing", label: "Writing" },
+          ]}
+        />
       </div>
 
       {/* Right: full-height assistant pane */}
