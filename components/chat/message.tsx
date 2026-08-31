@@ -20,7 +20,7 @@ export function messageText(message: UIMessage): string {
     .join("");
 }
 
-const CITE_RE = /\[cite:([\w./-]+)\]/g;
+const CITE_RE = /\[cite:\s*([\w./-]+)\s*\]/g;
 
 /**
  * Turns `[cite:concept-id]` markers into markdown links (`[n](#cite:n)`)
