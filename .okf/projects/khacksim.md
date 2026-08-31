@@ -26,7 +26,7 @@ using CARLA as the world simulator, with high-accuracy physics models and an
 interface layer that can emit telemetry to any downstream infrastructure.
 
 **Winner of K!Hacks** (state-level hackathon at CEG, Anna University),
-powered by MotorQ, the company Bharathi later interned at.
+powered by Motorq, the company Bharathi later interned at.
 
 # Stack
 
@@ -36,9 +36,9 @@ Next.js, CARLA, Python, MATLAB, physics modeling.
 
 Most hackathon simulators show one car driving around. This one pushed
 realistic telemetry from a thousand cars into real fleet infrastructure.
-That kind of load thinking later showed up in his MotorQ event-streaming
+That kind of load thinking later showed up in his Motorq event-streaming
 work.
 
 # Related
 
-- [experience](/profile/experience.md) (MotorQ), [awards](/profile/awards.md)
+- [experience](/profile/experience.md) (Motorq), [awards](/profile/awards.md)

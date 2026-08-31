@@ -47,7 +47,7 @@ export default function HomePage() {
         {/* Wordmark: hero-scale in flow, sticks and scales into the bar */}
         <a
           href="#intro"
-          className="wordmark-dock rise-in z-50 mb-12 inline-block font-mono text-[20px] leading-none text-ink"
+          className="wordmark-dock rise-in z-50 mb-12 inline-block font-mono text-lg leading-none text-ink"
           style={{ "--rise-index": 0 } as React.CSSProperties}
         >
           bharathi<span className="text-ink-faint">.fyi</span>

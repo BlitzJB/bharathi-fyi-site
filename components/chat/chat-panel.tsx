@@ -18,7 +18,7 @@ import {
 const STARTERS = [
   "What has he actually built?",
   "Why move from infra to AI?",
-  "What did he do at MotorQ?",
+  "What did he do at Motorq?",
   "How do I reach him?",
 ];
 

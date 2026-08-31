@@ -30,7 +30,7 @@ his uptime, and that is where the platform habits come from.
 
 Internships at Dexio Designs and Miniture came next: backend services,
 notification systems, data ingest, and a React Native app he owned a large
-part of. Then the most platform-heavy chapter, at MotorQ in mid-2025. He
+part of. Then the most platform-heavy chapter, at Motorq in mid-2025. He
 benchmarked Apache Pulsar, designed an abstraction layer that let the
 backend run on Event Hubs, Kafka, or Pulsar without code changes, and led
 the migration of a customer-facing API onto it with zero downtime. He also

@@ -22,7 +22,7 @@ sources:
 - **Winner, IndustryAI Hackathon** (IIT Madras, Shaastra 2025): won out of **500+ teams**.
 - **Winner, Aurigo Hackathon** (NIT Trichy, held at Aurigo, Bangalore): won out of **800+ teams**.
 - **Runner-up, Tem-e-thon** (Temenos, at Anna University): out of **600+ teams**.
-- **Winner, K!Hacks 2024** (CEG, Anna University, powered by MotorQ): won out of **300+ teams** with [KHackSim](/projects/khacksim.md).
+- **Winner, K!Hacks 2024** (CEG, Anna University, powered by Motorq): won out of **300+ teams** with [KHackSim](/projects/khacksim.md).
 - **Finalist, Encryptcon 2024** (IIT Madras): top 6 of **366+ teams**.
 - **Runner-up, Envision 2023** (IEEE CS, SSN College of Engineering): 2nd of 70+, with [CourseGPT](/projects/coursegpt.md).
 - **2nd Runner-up, HackIT 2023** (SSN College of Engineering): 3rd of 90+ teams.
