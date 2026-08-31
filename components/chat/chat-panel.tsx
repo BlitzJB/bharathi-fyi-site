@@ -51,7 +51,12 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
     if (!el) return;
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+    el.style.overflowY = el.scrollHeight > 160 ? "auto" : "hidden";
   }
+
+  useEffect(() => {
+    autoresize();
+  }, []);
 
   function submit(text: string) {
     const trimmed = text.trim();
@@ -154,7 +159,7 @@ export function ChatPanel({ conceptCount }: { conceptCount: number }) {
             placeholder="Ask about Bharathi's work&hellip;"
             maxLength={2000}
             aria-label="Your question"
-            className="max-h-40 w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
+            className="max-h-40 w-full resize-none overflow-y-hidden bg-transparent px-4 pt-3.5 pb-1 text-[15px] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
           />
           <div className="flex items-center justify-between px-3 pb-2.5 pl-4">
             <p className="hidden font-mono text-[11px] text-ink-faint select-none sm:block">
