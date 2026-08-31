@@ -6,25 +6,41 @@ import { cn } from "@/lib/utils";
 export type Section = { id: string; label: string };
 
 export function SectionNav({ sections }: { sections: Section[] }) {
-  const [active, setActive] = useState(sections[0]?.id);
+  const [bandActive, setBandActive] = useState(sections[0]?.id);
+  const [endPinned, setEndPinned] = useState(false);
 
   useEffect(() => {
     // Track which section currently owns the reading line (upper third of
     // the viewport). IntersectionObserver, never scroll listeners.
-    const observer = new IntersectionObserver(
+    const band = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting) setBandActive(entry.target.id);
         }
       },
       { rootMargin: "-15% 0px -75% 0px" },
     );
     for (const section of sections) {
       const el = document.getElementById(section.id);
-      if (el) observer.observe(el);
+      if (el) band.observe(el);
     }
-    return () => observer.disconnect();
+
+    // A short final section near the page end never reaches the reading
+    // band, so when it is essentially fully in view, pin it active.
+    const lastEl = document.getElementById(sections[sections.length - 1]?.id ?? "");
+    const end = new IntersectionObserver(
+      ([entry]) => setEndPinned(entry.intersectionRatio >= 0.95),
+      { threshold: [0.95] },
+    );
+    if (lastEl) end.observe(lastEl);
+
+    return () => {
+      band.disconnect();
+      end.disconnect();
+    };
   }, [sections]);
+
+  const active = endPinned ? sections[sections.length - 1]?.id : bandActive;
 
   return (
     <nav aria-label="Sections" className="flex flex-col gap-3">
@@ -34,7 +50,7 @@ export function SectionNav({ sections }: { sections: Section[] }) {
           <a
             key={section.id}
             href={`#${section.id}`}
-            onClick={() => setActive(section.id)}
+            onClick={() => setBandActive(section.id)}
             className="group flex items-center gap-2.5 font-mono text-[11px]"
           >
             <span
