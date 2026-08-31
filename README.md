@@ -11,6 +11,7 @@ curated knowledgebase.
 | Landing page | `app/page.tsx` | Split hero: positioning left, chat right |
 | Blog | `content/blog/*.mdx` + `app/blog/` | File-based, frontmatter-driven |
 | Chat API | `app/api/chat/route.ts` | Vercel AI SDK `streamText` via AI Gateway |
+| Model picker | `lib/model.ts` | Free-first chain with a paid anchor (see below) |
 | Knowledgebase | `.okf/` | OKF v0.2 bundle: the chat's single source of truth |
 | KB compiler | `lib/knowledge.ts` | Folds the bundle into the model's system prompt |
 
@@ -61,7 +62,18 @@ once per server instance, so redeploy after KB changes.
 1. Push to GitHub, import the repo in Vercel.
 2. Enable AI Gateway on the project (chat auth is automatic via OIDC), or set
    `AI_GATEWAY_API_KEY` as an environment variable.
-3. Optionally set `CHAT_MODEL` (defaults to `openai/gpt-oss-120b`).
+3. Optionally set `CHAT_MODEL` (defaults to `zai/glm-5.3-flash`).
+
+## Model selection
+
+`lib/model.ts` picks models per request (cached 10 minutes): it lists the
+gateway's models, finds `-free` variants whose paid base clears
+`FREE_MODEL_MIN_OUTPUT` (default $1/MTok output, so only capable models
+qualify), and serves from the best one with the rest of the chain as
+gateway-enforced fallbacks, ending at `CHAT_MODEL`. Only those models can
+ever answer. If no free model qualifies or listing fails, `CHAT_MODEL`
+serves directly. The chain used for a request is in the `x-chat-models`
+response header.
 
 The chat route caps input length, history depth, and output tokens. For a
 high-traffic site, add rate limiting (Vercel WAF or middleware) on

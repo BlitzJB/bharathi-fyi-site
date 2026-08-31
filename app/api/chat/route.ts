@@ -1,5 +1,6 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { buildSystemPrompt } from "@/lib/knowledge";
+import { resolveChatModels } from "@/lib/model";
 
 export const maxDuration = 30;
 
@@ -36,14 +37,19 @@ export async function POST(req: Request) {
     );
   }
 
+  const { primary, fallbacks } = await resolveChatModels();
+
   const result = streamText({
-    model: process.env.CHAT_MODEL ?? "openai/gpt-oss-120b",
+    model: primary,
+    providerOptions:
+      fallbacks.length > 0 ? { gateway: { models: fallbacks } } : undefined,
     system: buildSystemPrompt(),
     messages: await convertToModelMessages(messages.slice(-MAX_MESSAGES)),
     maxOutputTokens: 1024,
   });
 
   return result.toUIMessageStreamResponse({
+    headers: { "x-chat-models": [primary, ...fallbacks].join(",") },
     onError: () => "The assistant is unavailable right now. Please try again in a moment.",
   });
 }

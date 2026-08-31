@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/gateway':
+        specifier: ^4.0.69
+        version: 4.0.69(zod@4.5.4)
       '@ai-sdk/react':
         specifier: ^4.0.88
         version: 4.0.88(react@19.2.8)(zod@4.5.4)
