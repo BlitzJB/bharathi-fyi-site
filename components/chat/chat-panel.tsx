@@ -25,11 +25,9 @@ const STARTERS = [
 export function ChatPanel({
   conceptCount,
   concepts,
-  model,
 }: {
   conceptCount: number;
   concepts: ConceptMeta[];
-  model: string;
 }) {
   const { messages, sendMessage, status, error, stop, regenerate, clearError } =
     useChat();
@@ -46,7 +44,6 @@ export function ChatPanel({
   const thinking = busy && !answerVisible;
   const retrying = retryRequested && busy;
   const hasText = input.trim().length > 0;
-  const modelName = model.split("/").pop() ?? model;
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -205,12 +202,8 @@ export function ChatPanel({
               className="max-h-40"
             />
             <ComposerToolbar>
-              <p className="hidden items-center gap-1.5 ps-3 font-mono text-[11px] text-ink-faint select-none sm:flex">
-                <span
-                  aria-hidden
-                  className="size-1.5 rounded-full bg-accent/60"
-                />
-                {modelName}
+              <p className="hidden ps-3 font-mono text-[11px] text-ink-faint select-none sm:block">
+                &#9166; send&ensp;&#8679;&#9166; new line
               </p>
               <ComposerActions>
                 <ComposerSend

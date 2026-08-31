@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ChatPanel } from "@/components/chat/chat-panel";
 import { getAllPosts } from "@/lib/blog";
 import { listConceptMeta } from "@/lib/knowledge";
-import { CHAT_MODEL } from "@/lib/model";
 
 const WORK: Array<{ year: string; org: string; role: string; line: string }> = [
   {
@@ -179,11 +178,7 @@ export default function HomePage() {
         id="chat"
         className="h-[85dvh] border-t border-line lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:border-t-0 lg:border-l lg:border-line"
       >
-        <ChatPanel
-          conceptCount={conceptMeta.length}
-          concepts={conceptMeta}
-          model={CHAT_MODEL}
-        />
+        <ChatPanel conceptCount={conceptMeta.length} concepts={conceptMeta} />
       </aside>
 
       <footer className="border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
