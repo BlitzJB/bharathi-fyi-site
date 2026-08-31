@@ -172,8 +172,22 @@ export default function HomePage() {
 
           {/* Landing footer lives in the left column so the chat pane runs
               to the bottom edge on desktop */}
-          <footer className="mt-20 hidden border-t border-line pt-6 font-mono text-xs text-ink-faint lg:block">
+          <footer className="mt-20 hidden flex-wrap items-baseline justify-between gap-3 border-t border-line pt-6 font-mono text-xs text-ink-faint lg:flex">
             <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
+            <div className="flex gap-6">
+              {LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  {...(link.href.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="transition-colors hover:text-accent-ink"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </footer>
         </div>
       </div>
@@ -200,8 +214,22 @@ export default function HomePage() {
         <ChatPanel concepts={conceptMeta} />
       </aside>
 
-      <footer className="border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
+      <footer className="flex flex-wrap items-baseline justify-between gap-3 border-t border-line py-6 font-mono text-xs text-ink-faint lg:hidden">
         <p>&copy; {new Date().getFullYear()} Joshua Bharathi &middot; Chennai</p>
+        <div className="flex gap-6">
+          {LINKS.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              {...(link.href.startsWith("http")
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              className="transition-colors hover:text-accent-ink"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
       </footer>
 
       {/* End-of-page sentinel for the section rail's bottom pin */}
