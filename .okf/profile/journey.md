@@ -39,15 +39,14 @@ pipeline that regenerates alert rules automatically.[^resume-2025]
 
 ## AI engineering (now)
 
-His degree is in AI and Data Science, and AI has been in his project work
-from the start. CourseGPT put a task queue in front of an LLM back in 2023.
-KHackSim was heavy simulation modeling. The current chapter makes that the
-day job: building LLM products with the same discipline he learned keeping
-event pipelines alive.
+He is a full-time Software Development Engineer at Motorq. His degree is in AI and Data
+Science, and AI has been in his project work from the start: CourseGPT put
+a task queue in front of an LLM back in 2023, before most of today's
+tooling existed.
 
-> TODO(bharathi): The résumé this draws from is pre-AI-era. Describe your
-> recent AI work here. What you built, the stack, what you're exploring.
-> Until then the assistant will say details are coming soon.
+> TODO(bharathi): Describe your AI work here. What you build day to day or
+> on the side, the stack, what you're exploring. Until then the assistant
+> will say details are coming soon.
 
 # How to talk about this
 

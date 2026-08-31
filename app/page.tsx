@@ -5,10 +5,10 @@ import { countConcepts } from "@/lib/knowledge";
 
 const WORK: Array<{ year: string; org: string; role: string; line: string }> = [
   {
-    year: "2025",
-    org: "MotorQ",
-    role: "SDE intern",
-    line: "Benchmarked Apache Pulsar, then led a customer-facing API onto a new event queue with zero downtime. Rebuilt multi-tenant monitoring on VictoriaMetrics.",
+    year: "2025–",
+    org: "Motorq",
+    role: "Software Development Engineer",
+    line: "A year as an intern, then full-time. I led the zero-downtime migration of a customer-facing API onto a new event queue, and rebuilt multi-tenant monitoring on VictoriaMetrics with a GitOps rule pipeline.",
   },
   {
     year: "2024",

@@ -32,6 +32,12 @@ sources:
 - **STIRS 2023 Awardee** (Shiv Nadar University): project selected for funded
   university research (1 of 12 selected projects).
 
+# Count
+
+His LinkedIn headline says **10x hackathon winner**. The list above is the
+subset documented in his résumé, so the full count is higher than what's
+written here.
+
 # How to present this
 
 Any one win could be luck. Placing at the top repeatedly, at IIT Madras,

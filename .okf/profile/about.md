@@ -19,11 +19,11 @@ sources:
 # Overview
 
 Joshua Bharathi (goes by **Bharathi**, online handle **BlitzJB**) is an AI
-engineer from Chennai, India, with a platform engineering background. He has
-shipped production software since 2022: a freelance studio
-with more than twenty clients, backend internships, and event-streaming
-platform work at MotorQ. These days he builds AI systems, meaning agents,
-LLM-backed services, and the infrastructure around them.
+engineer from Chennai, India, with a platform engineering background. He is a
+**Software Development Engineer** at Motorq. He has shipped production software since
+2022: a freelance studio with more than twenty clients, backend
+internships, and event-streaming platform work during his Motorq intern
+year.
 
 He holds a B.Tech in Artificial Intelligence & Data Science from Shiv Nadar
 University Chennai (Sept 2022 to Apr 2026, CGPA 8.00), where he was
