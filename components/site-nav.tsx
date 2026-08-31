@@ -3,25 +3,19 @@ import Link from "next/link";
 export function SiteNav() {
   return (
     <header className="border-b border-line">
-      <nav className="mx-auto flex w-full max-w-5xl items-baseline justify-between px-6 py-5">
+      <nav className="mx-auto flex w-full max-w-6xl items-baseline justify-between px-6 py-4">
         <Link
           href="/"
-          className="font-serif text-lg font-medium tracking-tight text-ink"
+          className="font-mono text-sm text-ink transition-colors hover:text-accent-ink"
         >
-          bharathi.fyi
+          bharathi<span className="text-ink-faint">.fyi</span>
         </Link>
-        <div className="flex items-baseline gap-6 font-mono text-xs tracking-wide uppercase">
-          <Link
-            href="/blog"
-            className="text-ink-faint transition-colors hover:text-ink"
-          >
+        <div className="flex items-baseline gap-7 text-sm">
+          <Link href="/blog" className="u-link no-underline hover:underline">
             Writing
           </Link>
-          <Link
-            href="/#chat"
-            className="text-ink-faint transition-colors hover:text-ink"
-          >
-            Ask
+          <Link href="/#chat" className="u-link no-underline hover:underline">
+            Ask the assistant
           </Link>
         </div>
       </nav>

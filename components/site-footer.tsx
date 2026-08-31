@@ -1,29 +1,28 @@
 export function SiteFooter() {
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto flex w-full max-w-5xl flex-wrap items-baseline justify-between gap-3 px-6 py-6 font-mono text-xs text-ink-faint">
-        <p>&copy; {new Date().getFullYear()} Bharathi</p>
-        <div className="flex gap-5">
-          {/* TODO(bharathi): point these at your real profiles */}
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-baseline justify-between gap-3 px-6 py-6 font-mono text-xs text-ink-faint">
+        <p>&copy; {new Date().getFullYear()} Joshua Bharathi · Chennai</p>
+        <div className="flex gap-6">
           <a
-            href="https://github.com"
+            href="https://github.com/BlitzJB"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-ink"
+            className="transition-colors hover:text-accent-ink"
           >
             GitHub
           </a>
           <a
-            href="https://www.linkedin.com"
+            href="https://www.linkedin.com/in/joshuabharathi/"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-ink"
+            className="transition-colors hover:text-accent-ink"
           >
             LinkedIn
           </a>
           <a
-            href="mailto:pown.raj77@gmail.com"
-            className="transition-colors hover:text-ink"
+            href="mailto:joshuabharathi2k4@gmail.com"
+            className="transition-colors hover:text-accent-ink"
           >
             Email
           </a>

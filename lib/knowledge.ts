@@ -45,6 +45,10 @@ function compile(): string {
   return sections.join("\n\n---\n\n");
 }
 
+export function countConcepts(): number {
+  return walkConcepts(OKF_DIR).length;
+}
+
 let cached: string | null = null;
 
 export function getKnowledge(): string {

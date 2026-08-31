@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Warm monochrome editorial palette */
-  --color-paper: #f7f6f3; /* page canvas — warm bone */
-  --color-surface: #fffffe; /* raised panels & cards */
-  --color-ink: #111110; /* headings, emphasis */
-  --color-ink-soft: #3f3e3a; /* body copy */
-  --color-ink-faint: #8a8781; /* meta, timestamps */
-  --color-line: #e8e6e0; /* hairline borders */
-  --color-accent: #346538; /* spot accent — muted green */
-  --color-accent-wash: #edf3ec; /* pale green wash */
+  /* Crisp paper + ink, one blueprint accent */
+  --color-paper: #fafaf8; /* page canvas */
+  --color-surface: #ffffff; /* raised panels */
+  --color-ink: #16160f; /* headings, emphasis — never pure black */
+  --color-ink-soft: #44443c; /* body copy */
+  --color-ink-faint: #83837a; /* meta, timestamps */
+  --color-line: #e4e3dd; /* hairline borders */
+  --color-line-strong: #c9c8c0; /* emphasized rules */
+  --color-accent: #2e3fd3; /* blueprint ultramarine — the only color */
+  --color-accent-ink: #2333ab; /* accent on hover / small text */
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-newsreader);
+  --font-display: var(--font-bricolage);
+
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
@@ -25,8 +28,30 @@ body {
 }
 
 ::selection {
-  background: var(--color-accent-wash);
-  color: var(--color-ink);
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* --- Film grain — fixed, non-interactive, breaks digital flatness -------- */
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* --- Scroll-entry reveal ------------------------------------------------ */
@@ -34,7 +59,7 @@ body {
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -43,13 +68,43 @@ body {
 }
 
 .rise-in {
-  animation: rise-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--rise-index, 0) * 80ms);
+  animation: rise-in 500ms var(--ease-out-strong) both;
+  animation-delay: calc(var(--rise-index, 0) * 60ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rise-in {
-    animation: none;
+    animation-duration: 1ms;
+  }
+}
+
+/* --- Tactile press feedback --------------------------------------------- */
+
+.pressable {
+  transition: transform 140ms var(--ease-out-strong);
+}
+
+.pressable:active {
+  transform: scale(0.98);
+}
+
+/* --- Underline link (shared hover language) ----------------------------- */
+
+.u-link {
+  color: var(--color-ink-soft);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition:
+    color 150ms ease,
+    text-decoration-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .u-link:hover {
+    color: var(--color-accent-ink);
+    text-decoration-color: var(--color-accent);
   }
 }
 
@@ -63,7 +118,7 @@ article pre code {
 article :not(pre) > code {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 4px;
+  border-radius: 3px;
   padding: 0.1em 0.35em;
   color: var(--color-ink);
 }
@@ -99,6 +154,6 @@ article :not(pre) > code {
   font-size: 0.85em;
   background: var(--color-paper);
   border: 1px solid var(--color-line);
-  border-radius: 4px;
+  border-radius: 3px;
   padding: 0.1em 0.3em;
 }

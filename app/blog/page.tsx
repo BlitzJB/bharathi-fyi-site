@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllPosts, formatDate } from "@/lib/blog";
+import { getAllPosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Writing",
@@ -11,40 +11,42 @@ export default function BlogIndexPage() {
   const posts = getAllPosts();
 
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-16 sm:py-24">
-      <header className="mb-14">
-        <h1 className="font-serif text-4xl font-medium tracking-tight text-ink">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16 sm:py-24">
+      <header className="mb-12">
+        <h1 className="font-display text-4xl font-semibold tracking-tight text-ink">
           Writing
         </h1>
-        <p className="mt-3 text-ink-soft">
+        <p className="mt-3 max-w-[52ch]">
           Notes on platform engineering, AI systems, and the space between.
         </p>
       </header>
 
       {posts.length === 0 ? (
-        <p className="text-ink-soft">Nothing here yet.</p>
+        <p className="text-ink-faint">Nothing here yet.</p>
       ) : (
-        <ul className="space-y-10">
-          {posts.map((post) => (
-            <li key={post.slug}>
-              <article>
-                <Link href={`/blog/${post.slug}`} className="group block">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h2 className="font-serif text-xl font-medium tracking-tight text-ink transition-colors group-hover:text-accent">
-                      {post.title}
-                    </h2>
-                    <time
-                      dateTime={post.date}
-                      className="shrink-0 font-mono text-xs text-ink-faint"
-                    >
-                      {formatDate(post.date)}
-                    </time>
-                  </div>
-                  <p className="mt-2 leading-relaxed text-ink-soft">
+        <ul className="border-t border-line-strong">
+          {posts.map((post, i) => (
+            <li key={post.slug} className="border-b border-line">
+              <Link
+                href={`/blog/${post.slug}`}
+                className="group rise-in flex items-baseline gap-6 py-5"
+                style={{ "--rise-index": i } as React.CSSProperties}
+              >
+                <time
+                  dateTime={post.date}
+                  className="w-24 shrink-0 font-mono text-xs text-ink-faint tabular-nums"
+                >
+                  {post.date}
+                </time>
+                <span className="min-w-0">
+                  <span className="block font-display text-lg font-semibold tracking-tight text-ink transition-colors group-hover:text-accent-ink">
+                    {post.title}
+                  </span>
+                  <span className="mt-1 block text-sm leading-relaxed">
                     {post.description}
-                  </p>
-                </Link>
-              </article>
+                  </span>
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

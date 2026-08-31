@@ -8,34 +8,37 @@ tags:
 status: draft
 generated:
   by: claude-fable/5
-  at: '2026-08-31T16:20:00Z'
+  at: '2026-08-31T17:10:00Z'
 ---
 
 # For the site assistant
 
 These are the answers to lead with when visitors ask common questions.
 
+## How can I get in touch?
+
+Email **joshuabharathi2k4@gmail.com**, or connect on
+[LinkedIn](https://www.linkedin.com/in/joshuabharathi/). Code lives at
+[github.com/BlitzJB](https://github.com/BlitzJB).
+
+## Where is Bharathi based?
+
+Chennai, India. He has worked on-site, hybrid, and remote.
+
 ## Is Bharathi open to new opportunities?
 
-> TODO(bharathi): e.g. "Yes — open to senior AI engineering roles" or "Happy
-> where I am, but always up for interesting conversations."
+> TODO(bharathi): e.g. "Yes — open to AI engineering roles" or "Happy where I
+> am, but always up for interesting conversations."
 
 ## What kind of work is Bharathi looking for?
 
 > TODO(bharathi): The kind of problems, team, and stack you want.
 
-## How can I get in touch?
-
-> TODO(bharathi): Preferred channel — email, LinkedIn, X/DM.
-
-## Where is Bharathi based? Remote or on-site?
-
-> TODO(bharathi): Location and remote preference.
-
 ## Can I see a résumé/CV?
 
-> TODO(bharathi): Link to a hosted PDF, or state that the site plus
-> [projects](/projects/index.md) is the canonical record.
+There's no hosted PDF on the site yet — the [experience](/profile/experience.md)
+and [projects](/projects/index.md) concepts are the canonical record, and a
+résumé is available on request by email.
 
 # Related
 

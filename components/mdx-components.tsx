@@ -4,48 +4,42 @@ import Link from "next/link";
 export const mdxComponents: MDXComponents = {
   h2: (props) => (
     <h2
-      className="mt-12 mb-4 font-serif text-2xl font-medium tracking-tight text-ink"
+      className="mt-12 mb-4 font-display text-2xl font-semibold tracking-tight text-ink"
       {...props}
     />
   ),
   h3: (props) => (
     <h3
-      className="mt-8 mb-3 font-serif text-xl font-medium tracking-tight text-ink"
+      className="mt-8 mb-3 font-display text-xl font-semibold tracking-tight text-ink"
       {...props}
     />
   ),
-  p: (props) => <p className="mb-5 leading-relaxed text-ink-soft" {...props} />,
+  p: (props) => <p className="mb-5 leading-relaxed" {...props} />,
   a: ({ href = "", ...props }) => {
     const isInternal = href.startsWith("/") || href.startsWith("#");
     if (isInternal) {
-      return (
-        <Link
-          href={href}
-          className="text-ink underline decoration-line underline-offset-4 transition-colors hover:decoration-ink"
-          {...props}
-        />
-      );
+      return <Link href={href} className="u-link" {...props} />;
     }
     return (
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-ink underline decoration-line underline-offset-4 transition-colors hover:decoration-ink"
+        className="u-link"
         {...props}
       />
     );
   },
   ul: (props) => (
-    <ul className="mb-5 list-disc space-y-2 pl-6 text-ink-soft marker:text-line" {...props} />
+    <ul className="mb-5 list-disc space-y-2 pl-6 marker:text-line-strong" {...props} />
   ),
   ol: (props) => (
-    <ol className="mb-5 list-decimal space-y-2 pl-6 text-ink-soft marker:text-line" {...props} />
+    <ol className="mb-5 list-decimal space-y-2 pl-6 marker:text-line-strong" {...props} />
   ),
   li: (props) => <li className="leading-relaxed" {...props} />,
   blockquote: (props) => (
     <blockquote
-      className="mb-5 border-l-2 border-line pl-5 text-ink-soft italic"
+      className="mb-5 border-l-2 border-accent/40 pl-5 text-ink-soft italic"
       {...props}
     />
   ),
@@ -53,7 +47,7 @@ export const mdxComponents: MDXComponents = {
   code: (props) => <code className="font-mono text-[0.9em]" {...props} />,
   pre: (props) => (
     <pre
-      className="mb-6 overflow-x-auto rounded-md border border-line bg-surface p-4 text-sm leading-relaxed"
+      className="mb-6 overflow-x-auto border border-line bg-surface p-4 text-sm leading-relaxed"
       {...props}
     />
   ),
@@ -64,9 +58,9 @@ export const mdxComponents: MDXComponents = {
     </div>
   ),
   th: (props) => (
-    <th className="border-b border-line px-3 py-2 text-left font-medium text-ink" {...props} />
+    <th className="border-b border-line-strong px-3 py-2 text-left font-medium text-ink" {...props} />
   ),
   td: (props) => (
-    <td className="border-b border-line/60 px-3 py-2 text-ink-soft" {...props} />
+    <td className="border-b border-line px-3 py-2" {...props} />
   ),
 };

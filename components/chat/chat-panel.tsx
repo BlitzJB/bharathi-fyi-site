@@ -5,13 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "./message";
 
 const STARTERS = [
-  "What does Bharathi do?",
-  "Why the move from platform to AI engineering?",
-  "What has Bharathi built?",
+  "What has Bharathi actually shipped?",
+  "Why platform engineering, then AI?",
+  "What happened at MotorQ?",
   "How do I get in touch?",
 ];
 
-export function ChatPanel() {
+export function ChatPanel({ conceptCount }: { conceptCount: number }) {
   const { messages, sendMessage, status, error } = useChat();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -32,41 +32,49 @@ export function ChatPanel() {
 
   return (
     <section
-      aria-label="Chat with Bharathi's assistant"
-      className="flex h-[30rem] flex-col rounded-lg border border-line bg-surface sm:h-[34rem]"
+      aria-label="Ask Bharathi's assistant"
+      className="border border-line-strong bg-surface"
     >
-      <header className="flex items-center gap-2.5 border-b border-line px-5 py-3.5">
-        <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60" />
-          <span className="relative inline-flex size-2 rounded-full bg-accent" />
-        </span>
-        <h2 className="font-mono text-xs tracking-wide text-ink-soft uppercase">
-          Ask my assistant
-        </h2>
+      {/* Title strip */}
+      <header className="flex items-baseline justify-between border-b border-line-strong px-4 py-2.5">
+        <h2 className="font-mono text-xs text-ink">assistant</h2>
+        <p className="font-mono text-[11px] text-ink-faint">
+          grounded in{" "}
+          <span className="text-accent-ink">.okf/</span> · {conceptCount}{" "}
+          concepts
+        </p>
       </header>
 
       <div
         ref={scrollRef}
-        className="flex-1 space-y-4 overflow-y-auto px-5 py-4"
+        className="h-[24rem] space-y-4 overflow-y-auto px-4 py-4 sm:h-[27rem]"
       >
         {messages.length === 0 ? (
-          <div className="flex h-full flex-col justify-end gap-4">
-            <p className="text-sm leading-relaxed text-ink-soft">
-              I&rsquo;m grounded in a knowledgebase Bharathi maintains — ask
-              about their work, background, or how to get in touch.
+          <div className="flex h-full flex-col justify-between">
+            <p className="max-w-[38ch] text-sm leading-relaxed">
+              Every answer comes from a knowledgebase checked into this
+              site&rsquo;s repo — not the open internet. Ask about the work,
+              the switch to AI, or how to reach him.
             </p>
-            <div className="flex flex-wrap gap-2">
+            <ul className="border-t border-line">
               {STARTERS.map((starter) => (
-                <button
-                  key={starter}
-                  type="button"
-                  onClick={() => submit(starter)}
-                  className="rounded-full border border-line bg-paper px-3 py-1.5 text-left text-xs text-ink-soft transition-colors hover:border-ink-faint hover:text-ink"
-                >
-                  {starter}
-                </button>
+                <li key={starter} className="border-b border-line">
+                  <button
+                    type="button"
+                    onClick={() => submit(starter)}
+                    className="group flex w-full items-baseline gap-3 py-2.5 text-left text-sm transition-colors hover:text-accent-ink"
+                  >
+                    <span
+                      aria-hidden
+                      className="font-mono text-xs text-ink-faint transition-colors group-hover:text-accent-ink"
+                    >
+                      &rarr;
+                    </span>
+                    {starter}
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ) : (
           <>
@@ -74,12 +82,12 @@ export function ChatPanel() {
               <ChatMessage key={message.id} message={message} />
             ))}
             {status === "submitted" && (
-              <p className="animate-pulse font-mono text-xs text-ink-faint">
-                thinking&hellip;
+              <p className="font-mono text-xs text-ink-faint">
+                <span className="inline-block animate-pulse">reading the knowledgebase&hellip;</span>
               </p>
             )}
             {error && (
-              <p className="text-xs text-red-700">
+              <p className="border-l-2 border-accent pl-3 text-xs text-ink-soft">
                 Something went wrong — try again in a moment.
               </p>
             )}
@@ -92,22 +100,28 @@ export function ChatPanel() {
           e.preventDefault();
           submit(input);
         }}
-        className="flex items-center gap-2 border-t border-line p-3"
+        className="flex items-stretch border-t border-line-strong"
       >
+        <span
+          aria-hidden
+          className="flex items-center pl-4 font-mono text-sm text-ink-faint"
+        >
+          &gt;
+        </span>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about Bharathi&hellip;"
+          placeholder="ask about the work"
           maxLength={2000}
           aria-label="Your question"
-          className="min-w-0 flex-1 rounded-md bg-transparent px-2 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent px-3 py-3 font-mono text-sm text-ink placeholder:text-ink-faint focus:outline-none"
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="rounded-md bg-ink px-3.5 py-2 text-sm text-paper transition-opacity disabled:opacity-40"
+          className="pressable m-1.5 bg-ink px-4 font-mono text-xs text-paper transition-colors disabled:opacity-35"
         >
-          {busy ? "…" : "Send"}
+          {busy ? "…" : "send"}
         </button>
       </form>
     </section>
