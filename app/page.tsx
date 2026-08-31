@@ -177,7 +177,7 @@ export default function HomePage() {
           </footer>
         </div>
 
-        <div className="rise-in sticky top-28 ml-auto hidden shrink-0 xl:block" style={{ "--rise-index": 3 } as React.CSSProperties}>
+        <div className="rise-in sticky top-28 hidden shrink-0 xl:block" style={{ "--rise-index": 3 } as React.CSSProperties}>
           <SectionNav
             sections={[
               { id: "intro", label: "Intro" },
