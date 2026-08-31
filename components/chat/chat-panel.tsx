@@ -91,28 +91,20 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
         className="flex-1 overflow-x-hidden overflow-y-auto px-5 py-6 sm:px-6 lg:px-8"
       >
         {messages.length === 0 ? (
-          <div className="flex h-full max-w-[30rem] flex-col justify-center gap-10">
-            <p
-              className="rise-in text-[15px] leading-relaxed"
+          <div className="flex h-full max-w-[30rem] flex-col justify-center gap-8">
+            <h2
+              className="rise-in font-display text-2xl font-semibold tracking-tight text-ink"
               style={{ "--rise-index": 0 } as React.CSSProperties}
             >
-              This assistant answers from a knowledgebase I keep in the
-              site&rsquo;s repo. If something isn&rsquo;t in there, it says so
-              instead of guessing. Ask it what you&rsquo;d ask me.
-            </p>
+              Ask about my work.
+            </h2>
             <div>
-              <p
-                className="rise-in font-mono text-[11px] text-ink-faint"
-                style={{ "--rise-index": 1 } as React.CSSProperties}
-              >
-                try asking
-              </p>
-              <ul className="mt-2 divide-y divide-line">
+              <ul className="divide-y divide-line">
                 {STARTERS.map((starter, index) => (
                   <li
                     key={starter}
                     className="rise-in"
-                    style={{ "--rise-index": index + 2 } as React.CSSProperties}
+                    style={{ "--rise-index": index + 1 } as React.CSSProperties}
                   >
                     <button
                       type="button"
