@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { generateText } from "ai";
+import { chaosModelFor } from "./chaos";
 
 /**
  * Input guardrail: gpt-oss-safeguard classifies the visitor's message
@@ -38,7 +39,7 @@ export async function classifyMessage(message: string): Promise<GuardVerdict> {
   const policy = loadPolicy();
   try {
     const result = await generateText({
-      model: SAFETY_MODEL,
+      model: chaosModelFor("safety") ?? SAFETY_MODEL,
       system: policy.text,
       prompt: `USER MESSAGE:\n${message.slice(0, 2000)}`,
       maxOutputTokens: 4096,

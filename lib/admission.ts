@@ -16,6 +16,18 @@ const GLOBAL_TOKENS_PER_DAY = Number(
 );
 
 export const KILL_SWITCH_KEY = "flags:chat:disabled";
+export const MODEL_OVERRIDE_KEY = "flags:chat:model";
+
+/**
+ * Runtime model override: set the Redis key "flags:chat:model" to any
+ * gateway model id to swap the primary model without a deploy (and delete
+ * it to roll back). The flag flip is the rollback mechanism for bad model
+ * choices, mirroring how the kill switch bounds bad behavior.
+ */
+export async function modelOverride(): Promise<string | null> {
+  const value = await redis.get<string>(MODEL_OVERRIDE_KEY);
+  return value && value.trim().length > 0 ? value.trim() : null;
+}
 
 const requestLimiter = new Ratelimit({
   redis,

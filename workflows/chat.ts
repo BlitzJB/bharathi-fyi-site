@@ -6,6 +6,7 @@ import {
   listConceptMeta,
   promptVersion,
 } from "@/lib/knowledge";
+import { chaosMode, CHAOS_HEALTHY_TEXT, type ChaosMode } from "@/lib/chaos";
 import { classifyMessage, type GuardVerdict } from "@/lib/guardrail";
 import { REFUSALS } from "@/lib/refusals";
 import { breakerOpen, recordFailure, recordSuccess } from "@/lib/breaker";
@@ -25,7 +26,11 @@ import {
   traceWrite,
 } from "@/lib/metrics";
 import { CHAT_MODEL } from "@/lib/model";
-import { releaseRunSlot, settleTokenBudgets } from "@/lib/admission";
+import {
+  modelOverride,
+  releaseRunSlot,
+  settleTokenBudgets,
+} from "@/lib/admission";
 
 export type ChatJob = {
   requestId: string;
@@ -163,15 +168,19 @@ async function generateWithLadder(
 ): Promise<Generated> {
   const modelMessages = await toModelMessages(job);
   const system = retrieval.system;
+  const primaryModel = await resolvePrimaryModel(job);
 
   for (const rung of [
-    { target: "primary", model: CHAT_MODEL },
-    { target: "fallback", model: FALLBACK_MODEL },
+    { target: "primary" as const, model: primaryModel },
+    { target: "fallback" as const, model: FALLBACK_MODEL },
   ]) {
     const skip = await isBreakerOpen(rung.target);
     if (skip) continue;
+    const chaos = await chaosModeStep(rung.target);
     try {
-      const result = await runAgent(rung.model, system, modelMessages, writable);
+      const result = chaos
+        ? await chaosRung(chaos, writable)
+        : await runAgent(rung.model, system, modelMessages, writable);
       await markSuccess(job, rung);
       return { ...result, modelUsed: rung.model, degraded: false };
     } catch (error) {
@@ -195,6 +204,15 @@ async function toModelMessages(job: ChatJob): Promise<ModelMessage[]> {
   return convertToModelMessages(job.messages);
 }
 
+async function resolvePrimaryModel(job: ChatJob): Promise<string> {
+  "use step";
+  const override = await modelOverride();
+  if (override) {
+    await traceWrite(job.requestId, { modelOverride: override });
+  }
+  return override ?? CHAT_MODEL;
+}
+
 async function isBreakerOpen(target: string): Promise<boolean> {
   "use step";
   return breakerOpen(target);
@@ -207,6 +225,46 @@ function textFromMessages(messages: ModelMessage[]): string {
   return last.content
     .map((part) => (part.type === "text" ? part.text : ""))
     .join("");
+}
+
+async function chaosModeStep(
+  target: "primary" | "fallback",
+): Promise<ChaosMode | null> {
+  "use step";
+  return chaosMode(target);
+}
+
+/**
+ * Fault-injected rung for the chaos suite: reproduces the outcomes a model
+ * can have (hard failure, mid-stream truncation, slow start, healthy
+ * answer) without any provider call, so the ladder, breaker, and
+ * error-holdback machinery are tested for real at zero token cost.
+ */
+async function chaosRung(
+  mode: ChaosMode,
+  writable: WritableStream<ModelCallStreamPart>,
+): Promise<{ text: string; finishReason: string; totalTokens: number }> {
+  "use step";
+  if (mode === "fail") {
+    throw new Error("chaos: simulated provider rate limit (429)");
+  }
+  if (mode === "truncate") {
+    const writer = writable.getWriter();
+    const id = `chaos-${Date.now()}`;
+    await writer.write({ type: "text-start", id } as ModelCallStreamPart);
+    await writer.write({
+      type: "text-delta",
+      id,
+      text: "Bharathi is a Software ",
+    } as ModelCallStreamPart);
+    writer.releaseLock();
+    throw new Error("chaos: stream truncated mid-answer");
+  }
+  if (mode === "slow") {
+    await new Promise((resolve) => setTimeout(resolve, 8000));
+  }
+  await writeTextToStream(writable, CHAOS_HEALTHY_TEXT);
+  return { text: CHAOS_HEALTHY_TEXT, finishReason: "stop", totalTokens: 125 };
 }
 
 async function runAgent(
