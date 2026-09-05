@@ -4,7 +4,7 @@
       "id": "contact",
       "question": "How can I get in touch with him?",
       "expectedCitations": ["faq", "profile/about"],
-      "mustMention": ["joshuabharathi2k4@gmail.com"]
+      "mustMention": ["hello@bharathi.fyi"]
     },
     {
       "id": "location",

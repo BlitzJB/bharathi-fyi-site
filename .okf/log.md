@@ -1,5 +1,8 @@
 # Update Log
 
+## 2026-09-06
+* **Contact email switch**: Public contact address changed to **hello@bharathi.fyi** in [about](profile/about.md) and [faq](faq.md); site footer links updated in the same commit. Vectors re-ingested and the semantic answer cache purged so no cached answer keeps the old address.
+
 ## 2026-09-01
 * **LinkedIn fold-in**: Updated [experience](profile/experience.md) with the current Motorq full-time SDE role (May 2026 to present) and the corrected year-long internship, added Upmarkt, and noted the 10x hackathon count in [awards](profile/awards.md). Conflicts between résumé and LinkedIn (Blitz dates, IndustryAI placement, Coding Club role) are noted inline pending Bharathi's confirmation.
 

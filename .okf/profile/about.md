@@ -47,7 +47,7 @@ IndustryAI (500+ teams) and NIT Trichy's Aurigo hackathon (800+ teams). See
 - Website: <https://bharathi.fyi>
 - GitHub: <https://github.com/BlitzJB>
 - LinkedIn: <https://www.linkedin.com/in/joshuabharathi/>
-- Email: <joshuabharathi2k4@gmail.com>
+- Email: <hello@bharathi.fyi>
 
 # Related
 

@@ -42,7 +42,7 @@ export const SOCIAL_LINKS = [
     href: "https://www.linkedin.com/in/joshuabharathi/",
     Icon: LinkedInIcon,
   },
-  { label: "email", href: "mailto:joshuabharathi2k4@gmail.com", Icon: MailIcon },
+  { label: "email", href: "mailto:hello@bharathi.fyi", Icon: MailIcon },
 ] as const;
 
 export function SocialLinks({

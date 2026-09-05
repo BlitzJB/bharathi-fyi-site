@@ -17,7 +17,7 @@ These are the answers to lead with when visitors ask common questions.
 
 ## How can I get in touch?
 
-Email **joshuabharathi2k4@gmail.com**, or connect on
+Email **hello@bharathi.fyi**, or connect on
 [LinkedIn](https://www.linkedin.com/in/joshuabharathi/). Code lives at
 [github.com/BlitzJB](https://github.com/BlitzJB).
 
