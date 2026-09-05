@@ -293,7 +293,9 @@ function ChatSession({
                   .slice(index + 1)
                   .filter((m) => m.role === "assistant").length;
                 const runId = runIds[runIds.length - 1 - fromEnd];
-                if (runId) traceHref = `/ops/trace/${runId}`;
+                // Cache-served answers have no run to trace.
+                if (runId && runId.startsWith("wrun_"))
+                  traceHref = `/ops/trace/${runId}`;
               }
               return (
                 <ChatMessage
