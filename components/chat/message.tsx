@@ -85,6 +85,7 @@ export function ChatMessage({
   const [copied, setCopied] = useState(false);
   const text = messageText(message);
   const isAssistant = message.role === "assistant";
+  const cached = message.parts.some((part) => part.type === "data-cached");
 
   const { processed, sources } = useMemo(
     () =>
@@ -116,6 +117,14 @@ export function ChatMessage({
 
   return (
     <div className="group/message flex flex-col items-start">
+      {cached && (
+        <span
+          className="mb-1 rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-ink-faint uppercase"
+          title="Served from the semantic cache, no model call"
+        >
+          cached
+        </span>
+      )}
       <div
         data-streaming={streaming || undefined}
         className="chat-markdown min-w-0 text-sm leading-relaxed"

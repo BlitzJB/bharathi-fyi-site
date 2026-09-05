@@ -29,7 +29,13 @@ export type CounterField =
   | "singleFlightHits"
   | "finishes"
   | "errors"
-  | "resumes";
+  | "resumes"
+  | "cacheHits"
+  | "guardOffTopic"
+  | "guardAbuse"
+  | "guardFailedOpen"
+  | "degradedAnswers"
+  | "citationsBroken";
 
 export async function bumpCounter(
   field: CounterField,

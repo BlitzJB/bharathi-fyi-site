@@ -263,6 +263,12 @@ function ChatSession({
     regenerate();
   }
 
+  function stopGeneration() {
+    stop();
+    // Also cancel the workflow run so the server stops paying for tokens.
+    fetch(`/api/chat/${boot.id}/stop`, { method: "POST" }).catch(() => {});
+  }
+
   return (
     <section
       aria-label="Ask Bharathi's assistant"
@@ -349,7 +355,7 @@ function ChatSession({
                   streaming={busy}
                   idle={hasText}
                   disabled={!busy && !hasText}
-                  onClick={busy ? () => stop() : () => submit(input)}
+                  onClick={busy ? stopGeneration : () => submit(input)}
                 />
               </ComposerActions>
             </ComposerToolbar>

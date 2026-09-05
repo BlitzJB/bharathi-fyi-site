@@ -71,6 +71,11 @@ export function getKnowledge(): string {
 }
 
 export function buildSystemPrompt(): string {
+  return buildSystemPromptWith(getKnowledge());
+}
+
+/** Same rules, caller-supplied knowledge block (full KB or retrieved chunks). */
+export function buildSystemPromptWith(knowledge: string): string {
   return `You are the assistant on bharathi.fyi, the personal site of Joshua Bharathi, an AI engineer with a platform engineering background. Visitors (recruiters, engineers, potential collaborators) ask you about Bharathi's background, skills, and work.
 
 Rules:
@@ -87,7 +92,7 @@ Rules:
 
 # Knowledgebase
 
-${getKnowledge()}`;
+${knowledge}`;
 }
 
 /**

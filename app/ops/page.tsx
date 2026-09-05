@@ -151,6 +151,30 @@ export default async function OpsPage() {
             detail="system prompt content hash"
           />
         </div>
+        <div className="grid grid-cols-2 gap-x-8 sm:grid-cols-4">
+          <Stat
+            label="Cache hits"
+            value={fmtCount(c.cacheHits)}
+            detail="semantic cache, no model call"
+          />
+          <Stat
+            label="Guardrail"
+            value={String((c.guardOffTopic ?? 0) + (c.guardAbuse ?? 0))}
+            detail={`${fmtCount(c.guardOffTopic)} off-topic · ${fmtCount(c.guardAbuse)} abuse`}
+          />
+          <Stat
+            label="Degraded"
+            value={fmtCount(c.degradedAnswers)}
+            detail="answered from raw KB"
+            alert={(c.degradedAnswers ?? 0) > 0}
+          />
+          <Stat
+            label="Broken citations"
+            value={fmtCount(c.citationsBroken)}
+            detail="failed verification"
+            alert={(c.citationsBroken ?? 0) > 0}
+          />
+        </div>
         {snapshot.killSwitch && (
           <p className="mt-4 border border-red-200 bg-red-50 px-3 py-2 font-mono text-xs text-red-700">
             kill switch engaged — the assistant is answering in degraded mode

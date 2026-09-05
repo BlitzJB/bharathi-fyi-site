@@ -15,6 +15,8 @@ import {
   releaseRunSlot,
 } from "@/lib/admission";
 import { log } from "@/lib/log";
+import { cacheLookup } from "@/lib/retrieval";
+import { createErrorHoldback } from "@/lib/stream-taps";
 import {
   bumpCounter,
   recordSample,
@@ -66,6 +68,29 @@ function messageText(message: { parts: { type: string; text?: string }[] }) {
   return message.parts
     .map((part) => (part.type === "text" ? (part.text ?? "") : ""))
     .join(" ");
+}
+
+/** Serve a semantic-cache hit as an instant, badged UI chunk stream. */
+function cachedResponse(answer: string, requestId: string) {
+  const id = "cached-0";
+  const chunks: UIMessageChunk[] = [
+    { type: "start" },
+    { type: "text-start", id },
+    { type: "text-delta", id, delta: answer },
+    { type: "text-end", id },
+    { type: "data-cached", data: true } as UIMessageChunk,
+    { type: "finish" },
+  ];
+  const stream = new ReadableStream<UIMessageChunk>({
+    start(controller) {
+      for (const chunk of chunks) controller.enqueue(chunk);
+      controller.close();
+    },
+  });
+  return createUIMessageStreamResponse({
+    stream,
+    headers: { "x-workflow-run-id": "cache", "x-request-id": requestId },
+  });
 }
 
 /** Stream an existing run's chunks to the client (used when reattaching). */
@@ -141,6 +166,22 @@ export async function POST(req: Request) {
     }
   }
 
+  // Semantic cache: paraphrases of already-answered opening questions are
+  // served straight from the cache, visibly badged, in milliseconds.
+  if (isOpening) {
+    const cached = await cacheLookup(messageText(last));
+    if (cached) {
+      log("chat.cache-hit", {
+        requestId,
+        caller,
+        chatId,
+        score: cached.score,
+      });
+      await bumpCounter("cacheHits");
+      return cachedResponse(cached.answer, requestId);
+    }
+  }
+
   const inputChars = messages.reduce((sum, m) => sum + textLength(m), 0);
   const estimatedTokens = Math.ceil(inputChars / 4) + MAX_OUTPUT_TOKENS;
 
@@ -182,6 +223,7 @@ export async function POST(req: Request) {
         messages,
         estimatedTokens,
         enqueuedAt: Date.now(),
+        isOpening,
       },
     ]);
   } catch (error) {
@@ -247,6 +289,7 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: run.readable
       .pipeThrough(createModelCallToUIChunkTransform())
+      .pipeThrough(createErrorHoldback())
       .pipeThrough(ttftTap),
     headers: { "x-workflow-run-id": run.runId, "x-request-id": requestId },
   });
