@@ -9,15 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/gateway": "^4.0.69",
-    "@ai-sdk/react": "^4.0.88",
+    "@ai-sdk/gateway": "^4.0.74",
+    "@ai-sdk/react": "^4.0.95",
+    "@ai-sdk/workflow": "^2.0.23",
     "@langfuse/otel": "^5.11.0",
     "@langfuse/tracing": "^5.11.0",
     "@langfuse/vercel-ai-sdk": "^5.11.0",
     "@opentelemetry/sdk-trace-node": "^2.11.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.4",
-    "ai": "^7.0.85",
+    "ai": "^7.0.92",
+    "ajv": "^8.20.0",
     "gray-matter": "^4.0.3",
     "next": "16.3.3",
     "next-mdx-remote": "^6.0.0",
@@ -27,6 +29,7 @@
     "reading-time": "^1.5.0",
     "rehype-pretty-code": "^0.14.5",
     "shiki": "^4.4.3",
+    "workflow": "^4.8.5",
     "zod": "^4.5.4"
   },
   "devDependencies": {

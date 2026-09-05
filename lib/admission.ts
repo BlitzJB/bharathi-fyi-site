@@ -133,6 +133,31 @@ export async function settleTokenBudgets(
   await chargeTokens(caller, actualTokens - estimatedTokens);
 }
 
+/**
+ * Bounded concurrency to the model. The counter self-heals via TTL if a
+ * release is ever lost, so a leak degrades to a 2-minute brownout instead
+ * of a permanently wedged queue.
+ */
+const MAX_ACTIVE_RUNS = Number(process.env.CHAT_MAX_ACTIVE_RUNS ?? 4);
+const RUN_SLOT_KEY = "queue:active-runs";
+
+export async function acquireRunSlot(): Promise<
+  { ok: true } | { ok: false; depth: number }
+> {
+  const depth = await redis.incr(RUN_SLOT_KEY);
+  await redis.expire(RUN_SLOT_KEY, 120);
+  if (depth > MAX_ACTIVE_RUNS) {
+    await redis.decr(RUN_SLOT_KEY);
+    return { ok: false, depth: depth - 1 };
+  }
+  return { ok: true };
+}
+
+export async function releaseRunSlot(): Promise<void> {
+  const value = await redis.decr(RUN_SLOT_KEY);
+  if (value < 0) await redis.set(RUN_SLOT_KEY, 0, { ex: 120 });
+}
+
 function secondsUntilUtcMidnight(): number {
   const now = new Date();
   const midnight = Date.UTC(

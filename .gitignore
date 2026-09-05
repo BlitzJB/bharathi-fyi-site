@@ -43,3 +43,5 @@ next-env.d.ts
 
 # Local research/design artifacts, not published
 docs/
+/.swc
+app/.well-known/
