@@ -11,8 +11,10 @@ import { getKnowledge } from "./knowledge";
 
 const TOP_K = 6;
 const CACHE_NAMESPACE = "cache";
+// Calibrated against text-embedding-3-small: true paraphrases of the same
+// question score 0.87-0.89, unrelated questions ~0.67.
 const CACHE_SIMILARITY_THRESHOLD = Number(
-  process.env.SEMANTIC_CACHE_THRESHOLD ?? 0.92,
+  process.env.SEMANTIC_CACHE_THRESHOLD ?? 0.85,
 );
 const CACHE_TTL_HINT_MS = 1000 * 60 * 60 * 24 * 3;
 
