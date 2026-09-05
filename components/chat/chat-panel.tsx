@@ -15,6 +15,23 @@ import {
   ComposerSend,
 } from "./composer";
 
+/**
+ * The API rejects with a JSON body whose `error` field is written for
+ * humans (rate limits, budgets, kill switch). Surface it verbatim when
+ * present; anything unparseable gets the generic line.
+ */
+function serverErrorDetail(error: Error): string {
+  try {
+    const parsed = JSON.parse(error.message) as { error?: string };
+    if (typeof parsed.error === "string" && parsed.error.length > 0) {
+      return parsed.error;
+    }
+  } catch {
+    // fall through to the generic message
+  }
+  return "The model request failed. This is usually transient.";
+}
+
 const STARTERS = [
   "What has he actually built?",
   "Why move from infra to AI?",
@@ -154,7 +171,7 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
             {error && !busy && (
               <ErrorState
                 title="The assistant hit a snag"
-                detail="The model request failed. This is usually transient."
+                detail={serverErrorDetail(error)}
                 retrying={retrying}
                 onRetry={retry}
               />

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import matter from "gray-matter";
 
 const OKF_DIR = path.join(process.cwd(), ".okf");
@@ -87,4 +88,16 @@ Rules:
 # Knowledgebase
 
 ${getKnowledge()}`;
+}
+
+/**
+ * Short content hash identifying the exact system prompt (rules + compiled
+ * knowledgebase) a generation ran with. Stamped into logs and traces so
+ * behavior changes are attributable to prompt changes.
+ */
+export function promptVersion(): string {
+  return createHash("sha256")
+    .update(buildSystemPrompt())
+    .digest("hex")
+    .slice(0, 12);
 }
