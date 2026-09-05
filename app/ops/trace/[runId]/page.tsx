@@ -96,8 +96,68 @@ export default async function TracePage({
         <dl>
           <Row label="Admission" value={trace.admission} />
           <Row label="Enqueued" value={trace.enqueuedAt} />
+          <Row
+            label="Guardrail"
+            value={
+              trace.guardCategory &&
+              `${trace.guardCategory}${trace.guardMs ? ` (${trace.guardMs}ms)` : ""}`
+            }
+          />
+          <Row label="Guardrail reason" value={trace.guardReason} />
+          <Row label="Policy version" value={trace.policyVersion} />
+          <Row
+            label="Retrieval"
+            value={
+              trace.retrievalMode &&
+              `${trace.retrievalMode}${trace.retrievalMs ? ` (${trace.retrievalMs}ms)` : ""}`
+            }
+          />
           <Row label="Generation started" value={trace.generateStartedAt} />
+          <Row label="Model used" value={trace.modelUsed} />
+          <Row label="Model override" value={trace.modelOverride} />
+          <Row label="Primary rung" value={trace["ladder:primary"]} />
+          <Row label="Fallback rung" value={trace["ladder:fallback"]} />
           <Row label="Finished" value={trace.finishedAt} />
+        </dl>
+        {trace.retrievedChunks && trace.retrievedChunks !== "[]" && (
+          <div className="border-t border-line py-2.5">
+            <p className="pb-1 font-mono text-[11px] tracking-wide text-ink-faint uppercase">
+              Retrieved chunks
+            </p>
+            <ul>
+              {(() => {
+                try {
+                  const chunks = JSON.parse(trace.retrievedChunks) as {
+                    id: string;
+                    score: number;
+                  }[];
+                  return chunks.map((chunk) => (
+                    <li
+                      key={chunk.id}
+                      className="flex justify-between font-mono text-xs text-ink-soft"
+                    >
+                      <span>{chunk.id}</span>
+                      <span className="text-ink-faint">
+                        {chunk.score.toFixed(4)}
+                      </span>
+                    </li>
+                  ));
+                } catch {
+                  return null;
+                }
+              })()}
+            </ul>
+          </div>
+        )}
+      </section>
+
+      <section aria-label="Verification" className="pt-8">
+        <h2 className="pb-1 font-mono text-[11px] tracking-wide text-ink-faint uppercase">
+          Verification
+        </h2>
+        <dl>
+          <Row label="Citations" value={trace.citations} />
+          <Row label="Citations verified" value={trace.citationsVerified} />
         </dl>
       </section>
 
