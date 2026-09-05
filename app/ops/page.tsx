@@ -3,6 +3,7 @@ import Link from "next/link";
 import { promptVersion } from "@/lib/knowledge";
 import { readOpsSnapshot } from "@/lib/metrics";
 import { CHAT_MODEL } from "@/lib/model";
+import { formatMicros } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -165,6 +166,15 @@ export default async function OpsPage() {
             label="Tokens"
             value={tokens.toLocaleString()}
             detail={`${((tokens / globalBudget) * 100).toFixed(1)}% of daily ceiling`}
+          />
+          <Stat
+            label="Spend"
+            value={formatMicros(c.costMicros ?? 0)}
+            detail={
+              finishes > 0
+                ? `${formatMicros(Math.round((c.costMicros ?? 0) / finishes))} per answer`
+                : "today, generation only"
+            }
           />
           <Stat
             label="Model"

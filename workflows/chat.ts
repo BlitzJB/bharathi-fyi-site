@@ -21,11 +21,13 @@ import {
 import { log } from "@/lib/log";
 import {
   bumpCounter,
+  recordCost,
   recordSample,
   recordTokens,
   traceWrite,
 } from "@/lib/metrics";
 import { CHAT_MODEL } from "@/lib/model";
+import { costMicros } from "@/lib/pricing";
 import {
   modelOverride,
   releaseRunSlot,
@@ -158,6 +160,8 @@ type Generated = {
   modelUsed: string;
   finishReason: string;
   totalTokens: number;
+  inputTokens?: number;
+  outputTokens?: number;
   degraded: boolean;
 };
 
@@ -243,7 +247,7 @@ async function chaosModeStep(
 async function chaosRung(
   mode: ChaosMode,
   writable: WritableStream<ModelCallStreamPart>,
-): Promise<{ text: string; finishReason: string; totalTokens: number }> {
+): Promise<Omit<Generated, "modelUsed" | "degraded">> {
   "use step";
   if (mode === "fail") {
     throw new Error("chaos: simulated provider rate limit (429)");
@@ -272,7 +276,7 @@ async function runAgent(
   system: string,
   messages: ModelMessage[],
   writable: WritableStream<ModelCallStreamPart>,
-): Promise<{ text: string; finishReason: string; totalTokens: number }> {
+): Promise<Omit<Generated, "modelUsed" | "degraded">> {
   const agent = new WorkflowAgent({
     model,
     instructions: system,
@@ -289,6 +293,8 @@ async function runAgent(
     text: textFromMessages(result.messages),
     finishReason: String(result.finishReason),
     totalTokens: result.totalUsage?.totalTokens ?? 0,
+    inputTokens: result.totalUsage?.inputTokens ?? 0,
+    outputTokens: result.totalUsage?.outputTokens ?? 0,
   };
 }
 
@@ -375,6 +381,11 @@ async function verifyAndFinalize(job: ChatJob, generated: Generated) {
 
   const durationMs = Date.now() - job.enqueuedAt;
   const actualTokens = generated.totalTokens || job.estimatedTokens;
+  const cost = costMicros(
+    generated.modelUsed,
+    generated.inputTokens ?? 0,
+    generated.outputTokens ?? 0,
+  );
 
   const work: Promise<unknown>[] = [
     releaseRunSlot(),
@@ -382,9 +393,11 @@ async function verifyAndFinalize(job: ChatJob, generated: Generated) {
     recordSample("duration", durationMs),
     recordTokens(generated.totalTokens),
     settleTokenBudgets(job.caller, job.estimatedTokens, actualTokens),
+    recordCost(cost),
     traceWrite(job.requestId, {
       finishReason: generated.finishReason,
       totalTokens: generated.totalTokens,
+      costMicros: cost,
       durationMs,
       finishedAt: new Date().toISOString(),
       citations: cited.join(", ") || "none",

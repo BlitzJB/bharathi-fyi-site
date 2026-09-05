@@ -68,6 +68,15 @@ export async function recordTokens(total: number): Promise<void> {
   await pipeline.exec();
 }
 
+export async function recordCost(micros: number): Promise<void> {
+  if (!micros) return;
+  const key = dayKey();
+  const pipeline = redis.pipeline();
+  pipeline.hincrby(key, "costMicros", Math.round(micros));
+  pipeline.expire(key, DAY_TTL);
+  await pipeline.exec();
+}
+
 /** Merge fields into an answer's trace and index it for /ops. */
 export async function traceWrite(
   requestId: string,

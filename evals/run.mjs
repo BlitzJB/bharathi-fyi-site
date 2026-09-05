@@ -151,7 +151,7 @@ for (const [index, q] of questions.entries()) {
   results.push({ id: q.id, pass, failures });
   console.log(`${pass ? "PASS" : "FAIL"}  ${q.id}${pass ? "" : `  — ${failures.join("; ")}`}`);
   // Stay inside our own admission budget.
-  await new Promise((resolve) => setTimeout(resolve, 8000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 }
 
 const passed = results.filter((r) => r.pass).length;

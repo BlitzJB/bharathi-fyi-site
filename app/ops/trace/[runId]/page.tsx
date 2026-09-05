@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { readTrace } from "@/lib/metrics";
+import { formatMicros } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +84,14 @@ export default async function TracePage({
             value={
               trace.totalTokens
                 ? `${Number(trace.totalTokens).toLocaleString()} (estimated ${Number(trace.estimatedTokens || 0).toLocaleString()})`
+                : undefined
+            }
+          />
+          <Row
+            label="Cost"
+            value={
+              trace.costMicros !== undefined
+                ? formatMicros(Number(trace.costMicros))
                 : undefined
             }
           />

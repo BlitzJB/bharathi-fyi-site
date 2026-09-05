@@ -25,10 +25,64 @@
       "mustMention": ["Pulsar"]
     },
     {
+      "id": "zero-downtime",
+      "question": "Did he really migrate a customer-facing API with zero downtime?",
+      "expectedCitations": ["profile/experience", "profile/journey"],
+      "mustMention": ["zero"]
+    },
+    {
+      "id": "monitoring",
+      "question": "What monitoring work has he done?",
+      "expectedCitations": ["profile/experience", "profile/journey"],
+      "mustMention": ["VictoriaMetrics"]
+    },
+    {
+      "id": "current-role",
+      "question": "What is his current job title and where?",
+      "expectedCitations": ["profile/about", "profile/experience"],
+      "mustMention": ["Software Development Engineer"]
+    },
+    {
+      "id": "miniture",
+      "question": "What did he do at Miniture?",
+      "expectedCitations": ["profile/experience"],
+      "mustMention": ["React Native"]
+    },
+    {
+      "id": "dexio",
+      "question": "What was his work at Dexio Designs?",
+      "expectedCitations": ["profile/experience"],
+      "mustMention": ["Dexio"]
+    },
+    {
       "id": "hackathons",
       "question": "Which hackathons has he won?",
       "expectedCitations": ["profile/awards"],
       "mustMention": ["IndustryAI"]
+    },
+    {
+      "id": "aurigo",
+      "question": "Tell me about the Aurigo hackathon result.",
+      "expectedCitations": ["profile/awards"],
+      "mustMention": ["800"]
+    },
+    {
+      "id": "industryai",
+      "question": "What happened at the IndustryAI hackathon at IIT Madras?",
+      "expectedCitations": ["profile/awards"],
+      "mustMention": ["500"]
+    },
+    {
+      "id": "temethon",
+      "question": "How did he do at the Temenos hackathon?",
+      "expectedCitations": ["profile/awards"],
+      "mustMention": ["Runner-up"]
+    },
+    {
+      "id": "stirs",
+      "question": "What is the STIRS award he received?",
+      "expectedCitations": ["profile/awards", "profile/experience"],
+      "mustMention": ["Shiv Nadar"]
     },
     {
       "id": "education",
@@ -37,10 +91,28 @@
       "mustMention": ["Shiv Nadar"]
     },
     {
+      "id": "degree",
+      "question": "What is his degree in?",
+      "expectedCitations": ["profile/about", "profile/experience"],
+      "mustMention": ["Artificial Intelligence"]
+    },
+    {
+      "id": "coding-club",
+      "question": "Was he involved in any clubs at university?",
+      "expectedCitations": ["profile/about", "profile/experience"],
+      "mustMention": ["Coding Club"]
+    },
+    {
       "id": "khacksim",
       "question": "What is KHackSim?",
       "expectedCitations": ["projects/khacksim", "profile/awards"],
       "mustMention": ["CARLA"]
+    },
+    {
+      "id": "khacksim-scale",
+      "question": "How many vehicles does KHackSim simulate?",
+      "expectedCitations": ["projects/khacksim"],
+      "mustMention": ["1000"]
     },
     {
       "id": "coursegpt",
@@ -49,10 +121,22 @@
       "mustMention": ["queue"]
     },
     {
+      "id": "coursegpt-stack",
+      "question": "What stack was CourseGPT built with?",
+      "expectedCitations": ["projects/coursegpt"],
+      "mustMention": ["Llama"]
+    },
+    {
       "id": "freelance",
       "question": "Tell me about his freelance studio.",
       "expectedCitations": ["profile/experience", "profile/journey", "profile/about"],
       "mustMention": ["Blitz"]
+    },
+    {
+      "id": "freelance-clients",
+      "question": "How many clients did his studio serve?",
+      "expectedCitations": ["profile/experience", "profile/journey", "profile/about"],
+      "mustMention": ["20"]
     },
     {
       "id": "skills",
@@ -61,10 +145,46 @@
       "mustMention": ["Kafka"]
     },
     {
+      "id": "languages",
+      "question": "Which programming languages does he work in?",
+      "expectedCitations": ["profile/about"],
+      "mustMention": ["TypeScript"]
+    },
+    {
+      "id": "frontend",
+      "question": "Does he do frontend work too?",
+      "expectedCitations": ["profile/about", "profile/experience"],
+      "mustMention": ["React"]
+    },
+    {
+      "id": "why-ai",
+      "question": "Why did he move from platform engineering to AI?",
+      "expectedCitations": ["profile/journey"],
+      "mustMention": []
+    },
+    {
       "id": "this-site",
       "question": "How is this website built?",
       "expectedCitations": ["projects/portfolio-site"],
       "mustMention": ["Next.js"]
+    },
+    {
+      "id": "assistant-grounding",
+      "question": "How does this assistant know things about him?",
+      "expectedCitations": ["projects/portfolio-site", "getting-started"],
+      "mustMention": ["knowledgebase"]
+    },
+    {
+      "id": "resume",
+      "question": "Can I see his résumé?",
+      "expectedCitations": ["faq"],
+      "mustMention": []
+    },
+    {
+      "id": "github",
+      "question": "Where can I find his code?",
+      "expectedCitations": ["faq", "profile/about"],
+      "mustMention": ["BlitzJB"]
     },
     {
       "id": "unknown-gracefully",
