@@ -2,6 +2,7 @@ import { createUIMessageStreamResponse } from "ai";
 import { getRun } from "workflow/api";
 import { createModelCallToUIChunkTransform } from "@ai-sdk/workflow";
 import { log } from "@/lib/log";
+import { bumpCounter } from "@/lib/metrics";
 import { redis } from "@/lib/redis";
 
 export const maxDuration = 300;
@@ -32,6 +33,7 @@ export async function GET(
   try {
     const run = getRun(runId);
     log("chat.resume", { runId, uiStartIndex });
+    await bumpCounter("resumes");
     return createUIMessageStreamResponse({
       stream: run.readable.pipeThrough(
         createModelCallToUIChunkTransform({ uiStartIndex }),

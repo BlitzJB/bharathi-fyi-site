@@ -70,6 +70,7 @@ export function ChatMessage({
   concepts,
   onRegenerate,
   regenerating,
+  traceHref,
 }: {
   message: UIMessage;
   /** True while this message is still receiving tokens. */
@@ -78,6 +79,8 @@ export function ChatMessage({
   /** Present only on the message that can be regenerated (the last reply). */
   onRegenerate?: () => void;
   regenerating?: boolean;
+  /** Link to this answer's pipeline trace on /ops. */
+  traceHref?: string;
 }) {
   const [copied, setCopied] = useState(false);
   const text = messageText(message);
@@ -177,6 +180,19 @@ export function ChatMessage({
                 )}
               />
             </button>
+          )}
+          {traceHref && (
+            <a
+              href={traceHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                ghostButton,
+                "flex h-7 items-center px-2 font-mono text-[11px]",
+              )}
+            >
+              trace
+            </a>
           )}
         </div>
       )}

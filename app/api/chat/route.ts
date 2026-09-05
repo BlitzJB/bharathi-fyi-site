@@ -1,5 +1,9 @@
 import { randomUUID, createHash } from "crypto";
-import { createUIMessageStreamResponse, type UIMessage } from "ai";
+import {
+  createUIMessageStreamResponse,
+  type UIMessage,
+  type UIMessageChunk,
+} from "ai";
 import { start, getRun } from "workflow/api";
 import { createModelCallToUIChunkTransform } from "@ai-sdk/workflow";
 import { z } from "zod";
@@ -11,6 +15,14 @@ import {
   releaseRunSlot,
 } from "@/lib/admission";
 import { log } from "@/lib/log";
+import {
+  bumpCounter,
+  recordSample,
+  traceIndex,
+  traceWrite,
+} from "@/lib/metrics";
+import { promptVersion } from "@/lib/knowledge";
+import { CHAT_MODEL } from "@/lib/model";
 import { redis } from "@/lib/redis";
 
 export const maxDuration = 300;
@@ -103,6 +115,7 @@ export async function POST(req: Request) {
     : await redis.get<string>(messageKey);
   if (existingRun) {
     log("chat.reattach", { requestId, caller, chatId, runId: existingRun });
+    await bumpCounter("reattaches");
     return runResponse(existingRun, requestId);
   }
 
@@ -120,7 +133,10 @@ export async function POST(req: Request) {
     const shared = await redis.get<string>(flightKey);
     if (shared) {
       log("chat.single-flight", { requestId, caller, chatId, runId: shared });
-      await redis.set(messageKey, shared, { ex: 60 * 60 });
+      await Promise.all([
+        redis.set(messageKey, shared, { ex: 60 * 60 }),
+        bumpCounter("singleFlightHits"),
+      ]);
       return runResponse(shared, requestId);
     }
   }
@@ -128,6 +144,7 @@ export async function POST(req: Request) {
   const inputChars = messages.reduce((sum, m) => sum + textLength(m), 0);
   const estimatedTokens = Math.ceil(inputChars / 4) + MAX_OUTPUT_TOKENS;
 
+  await bumpCounter("requests");
   const verdict = await admit(caller, estimatedTokens);
   if (!verdict.ok) {
     log(
@@ -135,6 +152,7 @@ export async function POST(req: Request) {
       { requestId, caller, reason: verdict.reason, status: verdict.status },
       "warn",
     );
+    await bumpCounter("sheds");
     return Response.json(
       { error: verdict.message },
       {
@@ -147,6 +165,7 @@ export async function POST(req: Request) {
   const slot = await acquireRunSlot();
   if (!slot.ok) {
     log("chat.shed", { requestId, caller, reason: "queue-depth", depth: slot.depth }, "warn");
+    await bumpCounter("sheds");
     return Response.json(
       { error: "The assistant is at capacity right now. Try again in a few seconds." },
       { status: 503, headers: { "retry-after": "5" } },
@@ -156,7 +175,14 @@ export async function POST(req: Request) {
   let run: Awaited<ReturnType<typeof start>>;
   try {
     run = await start(chatWorkflow, [
-      { requestId, caller, chatId, messages },
+      {
+        requestId,
+        caller,
+        chatId,
+        messages,
+        estimatedTokens,
+        enqueuedAt: Date.now(),
+      },
     ]);
   } catch (error) {
     await releaseRunSlot();
@@ -176,16 +202,52 @@ export async function POST(req: Request) {
     );
   }
 
+  const startedAt = Date.now();
   const pipeline = redis.pipeline();
   pipeline.set(messageKey, run.runId, { ex: 60 * 60 });
   pipeline.set(`chat:${chatId}:run`, run.runId, { ex: 60 * 60 * 24 });
   if (flightKey) pipeline.set(flightKey, run.runId, { ex: 120, nx: true });
   await pipeline.exec();
 
+  await Promise.all([
+    bumpCounter("admitted"),
+    traceIndex(requestId, run.runId),
+    traceWrite(requestId, {
+      requestId,
+      runId: run.runId,
+      chatId,
+      caller,
+      model: CHAT_MODEL,
+      promptVersion: promptVersion(),
+      inputChars,
+      estimatedTokens,
+      enqueuedAt: new Date(startedAt).toISOString(),
+      admission: "admitted",
+    }),
+  ]);
+
   log("chat.enqueue", { requestId, caller, chatId, runId: run.runId });
 
+  // Tap the stream to measure time-to-first-token as the visitor saw it.
+  let sawFirstChunk = false;
+  const ttftTap = new TransformStream<UIMessageChunk, UIMessageChunk>({
+    transform: (chunk, controller) => {
+      if (!sawFirstChunk) {
+        sawFirstChunk = true;
+        const ttftMs = Date.now() - startedAt;
+        void Promise.all([
+          recordSample("ttft", ttftMs),
+          traceWrite(requestId, { ttftMs }),
+        ]).catch(() => {});
+      }
+      controller.enqueue(chunk);
+    },
+  });
+
   return createUIMessageStreamResponse({
-    stream: run.readable.pipeThrough(createModelCallToUIChunkTransform()),
+    stream: run.readable
+      .pipeThrough(createModelCallToUIChunkTransform())
+      .pipeThrough(ttftTap),
     headers: { "x-workflow-run-id": run.runId, "x-request-id": requestId },
   });
 }

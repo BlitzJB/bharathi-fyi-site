@@ -150,6 +150,11 @@ function ChatSession({
   boot: SavedChat;
   concepts: ConceptMeta[];
 }) {
+  // Run ids arrive as response headers, one per generation; assistant
+  // messages align with them from the end (regenerations replace the last
+  // message but append a new run).
+  const [runIds, setRunIds] = useState<string[]>([]);
+
   const transport = useMemo(
     () =>
       new WorkflowChatTransport<UIMessage>({
@@ -166,6 +171,10 @@ function ChatSession({
           headers,
           body: { id, messageId, trigger, messages, ...body },
         }),
+        onChatSendMessage: (response) => {
+          const runId = response.headers.get("x-workflow-run-id");
+          if (runId) setRunIds((prev) => [...prev, runId]);
+        },
       }),
     [],
   );
@@ -270,6 +279,16 @@ function ChatSession({
           <div className="mx-auto max-w-[36rem] space-y-5">
             {messages.map((message, index) => {
               const isLast = index === messages.length - 1;
+              // Align assistant messages with run ids from the end: the
+              // newest answer maps to the newest run.
+              let traceHref: string | undefined;
+              if (message.role === "assistant") {
+                const fromEnd = messages
+                  .slice(index + 1)
+                  .filter((m) => m.role === "assistant").length;
+                const runId = runIds[runIds.length - 1 - fromEnd];
+                if (runId) traceHref = `/ops/trace/${runId}`;
+              }
               return (
                 <ChatMessage
                   key={message.id}
@@ -282,6 +301,7 @@ function ChatSession({
                       : undefined
                   }
                   regenerating={retrying}
+                  traceHref={traceHref}
                 />
               );
             })}
