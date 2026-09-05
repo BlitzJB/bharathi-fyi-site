@@ -293,7 +293,27 @@ function ChatSession({
   const [elapsed, setElapsed] = useState(0);
   const [retryRequested, setRetryRequested] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const historyRef = useRef<HTMLDivElement>(null);
   const pastChats = history.filter((entry) => entry.id !== boot.id);
+
+  // Clicking anywhere outside the dropdown (or pressing Escape) closes it.
+  useEffect(() => {
+    if (!historyOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (!historyRef.current?.contains(event.target as Node)) {
+        setHistoryOpen(false);
+      }
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setHistoryOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [historyOpen]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -368,9 +388,11 @@ function ChatSession({
       aria-label="Ask Bharathi's assistant"
       className="relative flex h-full flex-col"
     >
-      <div className="absolute top-4 right-5 z-10 flex items-center gap-1 sm:right-6 lg:right-8">
+      {/* top-14 clears the 48px fixed wordmark bar that overlays the
+          viewport top once the page scrolls */}
+      <div className="absolute top-14 right-5 z-10 flex items-center gap-1 sm:right-6 lg:right-8">
         {pastChats.length > 0 && (
-          <div className="relative">
+          <div ref={historyRef} className="relative">
             <button
               type="button"
               onClick={() => setHistoryOpen((open) => !open)}
@@ -424,7 +446,7 @@ function ChatSession({
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-x-hidden overflow-y-auto px-5 py-6 sm:px-6 lg:px-8 lg:pt-14"
+        className="flex-1 overflow-x-hidden overflow-y-auto px-5 pt-24 pb-6 sm:px-6 lg:px-8"
       >
         {messages.length === 0 ? (
           <EmptyState onPick={submit} />
