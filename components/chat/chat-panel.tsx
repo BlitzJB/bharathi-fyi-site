@@ -175,8 +175,11 @@ function ChatSession({
       id: boot.id,
       messages: boot.messages,
       transport,
-      // Reattach to an in-flight generation after a reload.
-      resume: boot.messages.length > 0,
+      // Reattach to an in-flight generation after a reload. Persisted chats
+      // end on a user message only when the answer never finished (the
+      // in-flight assistant message is stripped before saving), so this
+      // resumes exactly the interrupted case without replaying finished runs.
+      resume: boot.messages[boot.messages.length - 1]?.role === "user",
     });
   const [input, setInput] = useState("");
   const [elapsed, setElapsed] = useState(0);
@@ -192,17 +195,23 @@ function ChatSession({
   const retrying = retryRequested && busy;
   const hasText = input.trim().length > 0;
 
-  // Persist the conversation so a reload can restore and resume it.
+  // Persist the conversation so a reload can restore and resume it. The
+  // still-streaming assistant message is left out: after a reload the
+  // resume stream replays the whole answer, and a saved partial copy would
+  // duplicate it.
   useEffect(() => {
+    const trailingPartial =
+      busy && messages[messages.length - 1]?.role === "assistant";
+    const toSave = trailingPartial ? messages.slice(0, -1) : messages;
     try {
       sessionStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ id: boot.id, messages } satisfies SavedChat),
+        JSON.stringify({ id: boot.id, messages: toSave } satisfies SavedChat),
       );
     } catch {
       // storage full or unavailable: resume simply won't survive reload
     }
-  }, [boot.id, messages]);
+  }, [boot.id, messages, busy]);
 
   useEffect(() => {
     const el = scrollRef.current;
