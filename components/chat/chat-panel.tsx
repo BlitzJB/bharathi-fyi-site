@@ -54,21 +54,78 @@ const STARTERS = [
   "How do I reach him?",
 ];
 
-const STORAGE_KEY = "bharathi-chat-v1";
+// Chat docs and their index live in localStorage so history survives across
+// tabs and visits; the active-chat pointer is per tab (sessionStorage) so a
+// reload resumes this tab's conversation while a new tab starts clean.
+const INDEX_KEY = "bharathi-chats-v1";
+const ACTIVE_KEY = "bharathi-active-chat-v1";
+const MAX_CHATS = 30;
+
+const chatKey = (id: string) => `bharathi-chat-v1:${id}`;
 
 const emptySubscribe = () => () => {};
 
 type SavedChat = { id: string; messages: UIMessage[] };
+export type ChatIndexEntry = { id: string; title: string; updatedAt: number };
 
-function loadSavedChat(): SavedChat {
+function loadIndex(): ChatIndexEntry[] {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(INDEX_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as ChatIndexEntry[];
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    // corrupted index: treat as empty
+  }
+  return [];
+}
+
+function loadChat(id: string): SavedChat | null {
+  try {
+    const raw = localStorage.getItem(chatKey(id));
     if (raw) {
       const parsed = JSON.parse(raw) as SavedChat;
       if (parsed.id && Array.isArray(parsed.messages)) return parsed;
     }
   } catch {
-    // corrupted state: start fresh
+    // corrupted doc
+  }
+  return null;
+}
+
+function persistChat(chat: SavedChat): void {
+  if (chat.messages.length === 0) return;
+  try {
+    localStorage.setItem(chatKey(chat.id), JSON.stringify(chat));
+    const firstUser = chat.messages.find((m) => m.role === "user");
+    const title =
+      firstUser?.parts
+        .map((p) => (p.type === "text" ? p.text : ""))
+        .join(" ")
+        .trim()
+        .slice(0, 64) || "Untitled chat";
+    const index = loadIndex().filter((entry) => entry.id !== chat.id);
+    index.unshift({ id: chat.id, title, updatedAt: Date.now() });
+    for (const pruned of index.slice(MAX_CHATS)) {
+      localStorage.removeItem(chatKey(pruned.id));
+    }
+    localStorage.setItem(INDEX_KEY, JSON.stringify(index.slice(0, MAX_CHATS)));
+    sessionStorage.setItem(ACTIVE_KEY, chat.id);
+  } catch {
+    // storage full or unavailable: history simply won't persist
+  }
+}
+
+function bootChat(): SavedChat {
+  try {
+    const activeId = sessionStorage.getItem(ACTIVE_KEY);
+    if (activeId) {
+      const saved = loadChat(activeId);
+      if (saved) return saved;
+    }
+  } catch {
+    // fall through to a fresh chat
   }
   return { id: crypto.randomUUID(), messages: [] };
 }
@@ -122,10 +179,37 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
     () => true,
     () => false,
   );
+  const [epoch, setEpoch] = useState(0);
+  // epoch re-reads external storage whenever the active chat changes (new
+  // chat, history jump) — an intentional extra dependency.
   const boot = useMemo<SavedChat | null>(
-    () => (hydrated ? loadSavedChat() : null),
-    [hydrated],
+    () => (hydrated ? bootChat() : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hydrated, epoch],
   );
+  const history = useMemo<ChatIndexEntry[]>(
+    () => (hydrated ? loadIndex() : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hydrated, epoch],
+  );
+
+  function startNewChat() {
+    try {
+      sessionStorage.removeItem(ACTIVE_KEY);
+    } catch {
+      // storage unavailable: the new boot id resets the session anyway
+    }
+    setEpoch((n) => n + 1);
+  }
+
+  function openChat(id: string) {
+    try {
+      sessionStorage.setItem(ACTIVE_KEY, id);
+    } catch {
+      // storage unavailable
+    }
+    setEpoch((n) => n + 1);
+  }
 
   if (!boot) {
     return (
@@ -140,15 +224,30 @@ export function ChatPanel({ concepts }: { concepts: ConceptMeta[] }) {
     );
   }
 
-  return <ChatSession key={boot.id} boot={boot} concepts={concepts} />;
+  return (
+    <ChatSession
+      key={boot.id}
+      boot={boot}
+      concepts={concepts}
+      history={history}
+      onNewChat={startNewChat}
+      onOpenChat={openChat}
+    />
+  );
 }
 
 function ChatSession({
   boot,
   concepts,
+  history,
+  onNewChat,
+  onOpenChat,
 }: {
   boot: SavedChat;
   concepts: ConceptMeta[];
+  history: ChatIndexEntry[];
+  onNewChat: () => void;
+  onOpenChat: (id: string) => void;
 }) {
   // Run ids arrive as response headers, one per generation; assistant
   // messages align with them from the end (regenerations replace the last
@@ -193,6 +292,8 @@ function ChatSession({
   const [input, setInput] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [retryRequested, setRetryRequested] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const pastChats = history.filter((entry) => entry.id !== boot.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -204,22 +305,15 @@ function ChatSession({
   const retrying = retryRequested && busy;
   const hasText = input.trim().length > 0;
 
-  // Persist the conversation so a reload can restore and resume it. The
-  // still-streaming assistant message is left out: after a reload the
-  // resume stream replays the whole answer, and a saved partial copy would
-  // duplicate it.
+  // Persist the conversation so a reload can restore and resume it, and so
+  // it lands in the history index. The still-streaming assistant message is
+  // left out: after a reload the resume stream replays the whole answer,
+  // and a saved partial copy would duplicate it.
   useEffect(() => {
     const trailingPartial =
       busy && messages[messages.length - 1]?.role === "assistant";
     const toSave = trailingPartial ? messages.slice(0, -1) : messages;
-    try {
-      sessionStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ id: boot.id, messages: toSave } satisfies SavedChat),
-      );
-    } catch {
-      // storage full or unavailable: resume simply won't survive reload
-    }
+    persistChat({ id: boot.id, messages: toSave });
   }, [boot.id, messages, busy]);
 
   useEffect(() => {
@@ -272,8 +366,61 @@ function ChatSession({
   return (
     <section
       aria-label="Ask Bharathi's assistant"
-      className="flex h-full flex-col"
+      className="relative flex h-full flex-col"
     >
+      <div className="absolute top-4 right-5 z-10 flex items-center gap-1 sm:right-6 lg:right-8">
+        {pastChats.length > 0 && (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setHistoryOpen((open) => !open)}
+              aria-expanded={historyOpen}
+              className="rounded px-2 py-1 font-mono text-[11px] tracking-wide text-ink-faint uppercase transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink motion-reduce:transition-none"
+            >
+              history
+            </button>
+            {historyOpen && (
+              <div className="absolute top-full right-0 z-20 mt-1 w-64 rounded-lg border border-line bg-surface py-1 shadow-sm">
+                <ul className="max-h-72 overflow-y-auto">
+                  {pastChats.map((entry) => (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHistoryOpen(false);
+                          onOpenChat(entry.id);
+                        }}
+                        className="flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-ink/[0.035] motion-reduce:transition-none"
+                      >
+                        <span className="truncate text-[13px] text-ink">
+                          {entry.title}
+                        </span>
+                        <span className="font-mono text-[10px] text-ink-faint">
+                          {new Date(entry.updatedAt).toLocaleString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+        {messages.length > 0 && !busy && (
+          <button
+            type="button"
+            onClick={onNewChat}
+            className="rounded px-2 py-1 font-mono text-[11px] tracking-wide text-ink-faint uppercase transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink motion-reduce:transition-none"
+          >
+            + new chat
+          </button>
+        )}
+      </div>
       {/* Messages */}
       <div
         ref={scrollRef}
