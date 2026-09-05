@@ -145,8 +145,13 @@ export async function POST(req: Request) {
 
       return result.toUIMessageStreamResponse({
         headers: { "x-request-id": requestId },
-        onError: () =>
-          "The assistant is unavailable right now. Please try again in a moment.",
+        onError: (error) => {
+          const detail = error instanceof Error ? error.message : String(error);
+          if (/rate.?limit/i.test(detail)) {
+            return "The model provider is rate-limiting us right now. Give it a minute and try again.";
+          }
+          return "The assistant is unavailable right now. Please try again in a moment.";
+        },
       });
     },
   );

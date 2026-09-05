@@ -27,7 +27,11 @@ function serverErrorDetail(error: Error): string {
       return parsed.error;
     }
   } catch {
-    // fall through to the generic message
+    // Not JSON: in-stream errors arrive as plain human-readable sentences.
+    const message = error.message.trim();
+    if (message.length > 0 && message.length < 200 && !/[<>{}]/.test(message)) {
+      return message;
+    }
   }
   return "The model request failed. This is usually transient.";
 }
