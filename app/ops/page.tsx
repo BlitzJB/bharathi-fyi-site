@@ -104,6 +104,32 @@ export default async function OpsPage() {
             detail={`${finishes} ok / ${errors} failed`}
           />
         </div>
+        <div className="grid grid-cols-2 gap-x-8 sm:grid-cols-4">
+          <Stat
+            label="Canary"
+            value={snapshot.canary?.status ?? "—"}
+            detail={
+              snapshot.canary
+                ? `${(snapshot.canary.elapsedMs / 1000).toFixed(1)}s at ${snapshot.canary.at.slice(11, 16)} UTC`
+                : "no probe yet"
+            }
+            alert={snapshot.canary?.status === "down"}
+          />
+          <Stat
+            label="Eval score"
+            value={
+              snapshot.evals
+                ? `${snapshot.evals.passed}/${snapshot.evals.total}`
+                : "—"
+            }
+            detail={
+              snapshot.evals
+                ? `groundedness judged, ${snapshot.evals.at.slice(0, 10)}`
+                : "no run recorded"
+            }
+            alert={snapshot.evals ? snapshot.evals.rate < 0.8 : false}
+          />
+        </div>
       </section>
 
       <section aria-label="Admission and queue" className="pt-10">

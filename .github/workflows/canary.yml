@@ -1,0 +1,41 @@
+name: production canary
+
+on:
+  schedule:
+    # Every 15 minutes, off the :00/:30 marks.
+    - cron: "4,19,34,49 * * * *"
+  workflow_dispatch:
+
+jobs:
+  canary:
+    name: golden question against production
+    runs-on: ubuntu-latest
+    steps:
+      - name: ask the assistant
+        id: probe
+        run: |
+          set +e
+          STARTED=$(date +%s%3N)
+          CHAT="canary-$(date +%s)"
+          BODY=$(curl -sN -X POST https://www.bharathi.fyi/api/chat \
+            -H 'content-type: application/json' \
+            --max-time 90 \
+            -d '{"id":"'$CHAT'","messageId":"'$CHAT'-m","messages":[{"id":"'$CHAT'-m","role":"user","parts":[{"type":"text","text":"Where is he based?"}]}]}')
+          ELAPSED=$(( $(date +%s%3N) - STARTED ))
+          OK=1
+          echo "$BODY" | grep -q '\[DONE\]' || OK=0
+          echo "$BODY" | grep -q '"type":"text-delta"' || OK=0
+          echo "$BODY" | grep -q '"type":"error"' && OK=0
+          echo "ok=$OK" >> "$GITHUB_OUTPUT"
+          echo "elapsed=$ELAPSED" >> "$GITHUB_OUTPUT"
+          echo "canary: ok=$OK elapsed=${ELAPSED}ms"
+      - name: publish result for /ops
+        run: |
+          STATUS=$([ "${{ steps.probe.outputs.ok }}" = "1" ] && echo up || echo down)
+          curl -s "${{ secrets.KV_REST_API_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.KV_REST_API_TOKEN }}" \
+            -H 'content-type: application/json' \
+            -d '["SET","canary:latest","{\"status\":\"'$STATUS'\",\"elapsedMs\":${{ steps.probe.outputs.elapsed }},\"at\":\"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\"}"]' > /dev/null
+      - name: fail if down
+        if: steps.probe.outputs.ok != '1'
+        run: exit 1

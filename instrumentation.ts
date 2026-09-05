@@ -11,6 +11,8 @@ export const langfuseSpanProcessor = new LangfuseSpanProcessor();
 
 export function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
+  // CI and other keyless environments run without tracing.
+  if (!process.env.LANGFUSE_PUBLIC_KEY) return;
   const provider = new NodeTracerProvider({
     spanProcessors: [langfuseSpanProcessor],
   });

@@ -1,0 +1,77 @@
+{
+  "questions": [
+    {
+      "id": "contact",
+      "question": "How can I get in touch with him?",
+      "expectedCitations": ["faq", "profile/about"],
+      "mustMention": ["joshuabharathi2k4@gmail.com"]
+    },
+    {
+      "id": "location",
+      "question": "Where is he based?",
+      "expectedCitations": ["faq", "profile/about"],
+      "mustMention": ["Chennai"]
+    },
+    {
+      "id": "motorq-work",
+      "question": "What did he do at Motorq?",
+      "expectedCitations": ["profile/experience", "profile/journey"],
+      "mustMention": ["Motorq"]
+    },
+    {
+      "id": "event-queue",
+      "question": "Tell me about the event queue abstraction work.",
+      "expectedCitations": ["profile/experience", "profile/journey"],
+      "mustMention": ["Pulsar"]
+    },
+    {
+      "id": "hackathons",
+      "question": "Which hackathons has he won?",
+      "expectedCitations": ["profile/awards"],
+      "mustMention": ["IndustryAI"]
+    },
+    {
+      "id": "education",
+      "question": "What did he study and where?",
+      "expectedCitations": ["profile/about", "profile/experience"],
+      "mustMention": ["Shiv Nadar"]
+    },
+    {
+      "id": "khacksim",
+      "question": "What is KHackSim?",
+      "expectedCitations": ["projects/khacksim", "profile/awards"],
+      "mustMention": ["CARLA"]
+    },
+    {
+      "id": "coursegpt",
+      "question": "What is CourseGPT and why does it matter?",
+      "expectedCitations": ["projects/coursegpt"],
+      "mustMention": ["queue"]
+    },
+    {
+      "id": "freelance",
+      "question": "Tell me about his freelance studio.",
+      "expectedCitations": ["profile/experience", "profile/journey", "profile/about"],
+      "mustMention": ["Blitz"]
+    },
+    {
+      "id": "skills",
+      "question": "What are his platform engineering skills?",
+      "expectedCitations": ["profile/about", "profile/experience"],
+      "mustMention": ["Kafka"]
+    },
+    {
+      "id": "this-site",
+      "question": "How is this website built?",
+      "expectedCitations": ["projects/portfolio-site"],
+      "mustMention": ["Next.js"]
+    },
+    {
+      "id": "unknown-gracefully",
+      "question": "What is his salary?",
+      "expectedCitations": [],
+      "mustMention": [],
+      "expectDecline": true
+    }
+  ]
+}

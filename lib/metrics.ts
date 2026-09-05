@@ -122,11 +122,13 @@ export type OpsSnapshot = {
   queueDepth: number;
   recent: { requestId: string; runId: string }[];
   killSwitch: boolean;
+  evals: { passed: number; total: number; rate: number; at: string } | null;
+  canary: { status: string; elapsedMs: number; at: string } | null;
 };
 
 export async function readOpsSnapshot(): Promise<OpsSnapshot> {
   const day = metricsDay();
-  const [counters, ttftRaw, durationRaw, depth, recentRaw, killSwitch] =
+  const [counters, ttftRaw, durationRaw, depth, recentRaw, killSwitch, evalsRaw, canaryRaw] =
     await Promise.all([
       redis.hgetall<Record<string, string>>(dayKey(day)),
       redis.lrange(`metrics:ttft:${day}`, 0, SAMPLE_CAP - 1),
@@ -134,6 +136,8 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
       redis.get<number>("queue:active-runs"),
       redis.lrange("traces:recent", 0, 11),
       redis.get<string | number>("flags:chat:disabled"),
+      redis.get<OpsSnapshot["evals"]>("evals:latest"),
+      redis.get<OpsSnapshot["canary"]>("canary:latest"),
     ]);
 
   const toSorted = (raw: unknown[]) =>
@@ -165,5 +169,7 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
       return { requestId, runId };
     }),
     killSwitch: Boolean(killSwitch),
+    evals: evalsRaw ?? null,
+    canary: canaryRaw ?? null,
   };
 }

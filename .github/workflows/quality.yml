@@ -1,0 +1,77 @@
+name: quality gates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".okf/**"
+      - "prompts/**"
+      - "lib/**"
+      - "workflows/**"
+      - "app/api/**"
+      - "evals/**"
+      - "tests/**"
+      - "package.json"
+  pull_request:
+    paths:
+      - ".okf/**"
+      - "prompts/**"
+      - "lib/**"
+      - "workflows/**"
+      - "app/api/**"
+      - "evals/**"
+      - "tests/**"
+      - "package.json"
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KV_REST_API_URL: ${{ secrets.KV_REST_API_URL }}
+  KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
+  UPSTASH_VECTOR_REST_URL: ${{ secrets.UPSTASH_VECTOR_REST_URL }}
+  UPSTASH_VECTOR_REST_TOKEN: ${{ secrets.UPSTASH_VECTOR_REST_TOKEN }}
+  AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+
+jobs:
+  chaos:
+    name: chaos suite (zero tokens)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: run chaos scenarios
+        run: node tests/chaos/run.mjs
+
+  evals:
+    name: golden evals (LLM judge)
+    runs-on: ubuntu-latest
+    # Serialize after chaos: both suites share the Redis admission state.
+    needs: chaos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: re-ingest knowledgebase vectors
+        run: node scripts/ingest-kb.mjs
+      - name: start server
+        run: |
+          CHAT_RPM=30 CHAT_TOKENS_PER_DAY_IP=500000 pnpm next start -p 3123 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:3123/ > /dev/null && break || sleep 1
+          done
+      - name: run golden evals
+        run: node evals/run.mjs
