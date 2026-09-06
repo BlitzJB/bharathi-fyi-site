@@ -6,19 +6,19 @@ import { redis } from "./redis";
  * answer gets a trace hash keyed by requestId with a runId alias.
  */
 
-const DAY_TTL = 60 * 60 * 24 * 8;
 const TRACE_TTL = 60 * 60 * 24 * 7;
 const SAMPLE_CAP = 500;
 const RECENT_CAP = 40;
+
+// All-time aggregates: this site is low-traffic by nature, so cumulative
+// numbers tell the story and quiet weeks stay honest.
+const ALL_KEY = "metrics:all";
+const SINCE_KEY = "metrics:since";
 
 export function metricsDay(offset = 0): string {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - offset);
   return d.toISOString().slice(0, 10);
-}
-
-function dayKey(day = metricsDay()): string {
-  return `metrics:${day}`;
 }
 
 export type CounterField =
@@ -41,40 +41,27 @@ export async function bumpCounter(
   field: CounterField,
   by = 1,
 ): Promise<void> {
-  const key = dayKey();
-  const pipeline = redis.pipeline();
-  pipeline.hincrby(key, field, by);
-  pipeline.expire(key, DAY_TTL);
-  await pipeline.exec();
+  await redis.hincrby(ALL_KEY, field, by);
 }
 
 export async function recordSample(
   kind: "ttft" | "duration",
   ms: number,
 ): Promise<void> {
-  const key = `metrics:${kind}:${metricsDay()}`;
+  const key = `metrics:${kind}:all`;
   const pipeline = redis.pipeline();
   pipeline.lpush(key, Math.round(ms));
   pipeline.ltrim(key, 0, SAMPLE_CAP - 1);
-  pipeline.expire(key, DAY_TTL);
   await pipeline.exec();
 }
 
 export async function recordTokens(total: number): Promise<void> {
-  const key = dayKey();
-  const pipeline = redis.pipeline();
-  pipeline.hincrby(key, "tokens", Math.round(total));
-  pipeline.expire(key, DAY_TTL);
-  await pipeline.exec();
+  await redis.hincrby(ALL_KEY, "tokens", Math.round(total));
 }
 
 export async function recordCost(micros: number): Promise<void> {
   if (!micros) return;
-  const key = dayKey();
-  const pipeline = redis.pipeline();
-  pipeline.hincrby(key, "costMicros", Math.round(micros));
-  pipeline.expire(key, DAY_TTL);
-  await pipeline.exec();
+  await redis.hincrby(ALL_KEY, "costMicros", Math.round(micros));
 }
 
 /** Merge fields into an answer's trace and index it for /ops. */
@@ -124,7 +111,8 @@ function percentile(sorted: number[], p: number): number | null {
 }
 
 export type OpsSnapshot = {
-  day: string;
+  /** ISO date the all-time counters started accumulating. */
+  since: string | null;
   counters: Record<string, number>;
   ttft: { p50: number | null; p95: number | null; samples: number };
   duration: { p50: number | null; p95: number | null; samples: number };
@@ -138,13 +126,11 @@ export type OpsSnapshot = {
   canary: { status: string; elapsedMs: number; at: string } | null;
   /** Raw millisecond samples for distribution rendering, unsorted. */
   ttftSamples: number[];
-  /** Last 7 days of counters, oldest first. */
-  days: { day: string; counters: Record<string, number> }[];
+  /** Tokens charged against today's global admission budget. */
+  dailyBudgetUsed: number;
 };
 
 export async function readOpsSnapshot(): Promise<OpsSnapshot> {
-  const day = metricsDay();
-  const dayKeys = Array.from({ length: 7 }, (_, i) => metricsDay(6 - i));
   const [
     counters,
     ttftRaw,
@@ -157,11 +143,12 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
     override,
     breakerPrimary,
     breakerFallback,
-    ...dayHashes
+    since,
+    dailyBudgetUsed,
   ] = await Promise.all([
-    redis.hgetall<Record<string, string>>(dayKey(day)),
-    redis.lrange(`metrics:ttft:${day}`, 0, SAMPLE_CAP - 1),
-    redis.lrange(`metrics:duration:${day}`, 0, SAMPLE_CAP - 1),
+    redis.hgetall<Record<string, string>>(ALL_KEY),
+    redis.lrange(`metrics:ttft:all`, 0, SAMPLE_CAP - 1),
+    redis.lrange(`metrics:duration:all`, 0, SAMPLE_CAP - 1),
     redis.get<number>("queue:active-runs"),
     redis.lrange("traces:recent", 0, 11),
     redis.get<string | number>("flags:chat:disabled"),
@@ -170,7 +157,8 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
     redis.get<string>("flags:chat:model"),
     redis.get<string>("breaker:primary:open"),
     redis.get<string>("breaker:fallback:open"),
-    ...dayKeys.map((d) => redis.hgetall<Record<string, string>>(dayKey(d))),
+    redis.get<string>(SINCE_KEY),
+    redis.get<number>(`budget:tokens:global:${metricsDay()}`),
   ]);
 
   const recent = (recentRaw ?? []).map((entry) => {
@@ -194,7 +182,7 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
   }
 
   return {
-    day,
+    since: since ?? null,
     counters: parsedCounters,
     ttft: {
       p50: percentile(ttft, 50),
@@ -218,12 +206,6 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
     evals: evalsRaw ?? null,
     canary: canaryRaw ?? null,
     ttftSamples: (ttftRaw ?? []).map(Number).filter(Number.isFinite),
-    days: dayKeys.map((d, i) => {
-      const parsed: Record<string, number> = {};
-      for (const [k, v] of Object.entries(dayHashes[i] ?? {})) {
-        parsed[k] = Number(v) || 0;
-      }
-      return { day: d, counters: parsed };
-    }),
+    dailyBudgetUsed: Math.max(0, Number(dailyBudgetUsed) || 0),
   };
 }

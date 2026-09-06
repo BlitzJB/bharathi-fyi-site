@@ -12,6 +12,7 @@ import {
 } from "react";
 import type { ConceptMeta } from "@/lib/knowledge";
 import { ChatMessage, messageText } from "./message";
+import { TraceStrip } from "./trace-strip";
 import { ThinkingIndicator } from "./thinking-indicator";
 import { ErrorState } from "./error-state";
 import {
@@ -133,12 +134,24 @@ function bootChat(): SavedChat {
 function EmptyState({ onPick }: { onPick?: (starter: string) => void }) {
   return (
     <div className="flex h-full max-w-[30rem] flex-col justify-center gap-8">
-      <h2
-        className="rise-in font-display text-2xl font-semibold tracking-tight text-ink"
+      <div
+        className="rise-in"
         style={{ "--rise-index": 0 } as React.CSSProperties}
       >
-        Ask about my work.
-      </h2>
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          Ask about my work.
+        </h2>
+        <p className="pt-2 text-[13px] leading-relaxed text-ink-soft">
+          Answers are grounded in a curated knowledgebase and served through
+          a production-grade pipeline: admission control, durable workflows,
+          guardrails, hybrid retrieval, and verified citations. Every answer
+          comes with its own trace, and the whole system runs in the open in{" "}
+          <a href="/ops" className="u-link">
+            the engine room
+          </a>
+          .
+        </p>
+      </div>
       <div>
         <ul className="divide-y divide-line">
           {STARTERS.map((starter, index) => (
@@ -391,6 +404,12 @@ function ChatSession({
       {/* top-14 clears the 48px fixed wordmark bar that overlays the
           viewport top once the page scrolls */}
       <div className="absolute top-14 right-5 z-10 flex items-center gap-1 sm:right-6 lg:right-8">
+        <a
+          href="/ops"
+          className="rounded px-2 py-1 font-mono text-[11px] tracking-wide text-ink-faint uppercase transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink motion-reduce:transition-none"
+        >
+          engine room
+        </a>
         {pastChats.length > 0 && (
           <div ref={historyRef} className="relative">
             <button
@@ -454,32 +473,34 @@ function ChatSession({
           <div className="mx-auto max-w-[36rem] space-y-5">
             {messages.map((message, index) => {
               const isLast = index === messages.length - 1;
+              const isStreaming =
+                busy && isLast && message.role === "assistant";
               // Align assistant messages with run ids from the end: the
               // newest answer maps to the newest run.
-              let traceHref: string | undefined;
+              let runId: string | undefined;
               if (message.role === "assistant") {
                 const fromEnd = messages
                   .slice(index + 1)
                   .filter((m) => m.role === "assistant").length;
-                const runId = runIds[runIds.length - 1 - fromEnd];
-                // Cache-served answers have no run to trace.
-                if (runId && runId.startsWith("wrun_"))
-                  traceHref = `/ops/trace/${runId}`;
+                runId = runIds[runIds.length - 1 - fromEnd];
               }
               return (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  concepts={concepts}
-                  streaming={busy && isLast && message.role === "assistant"}
-                  onRegenerate={
-                    !busy && isLast && message.role === "assistant"
-                      ? retry
-                      : undefined
-                  }
-                  regenerating={retrying}
-                  traceHref={traceHref}
-                />
+                <div key={message.id}>
+                  <ChatMessage
+                    message={message}
+                    concepts={concepts}
+                    streaming={isStreaming}
+                    onRegenerate={
+                      !busy && isLast && message.role === "assistant"
+                        ? retry
+                        : undefined
+                    }
+                    regenerating={retrying}
+                  />
+                  {message.role === "assistant" && !isStreaming && runId && (
+                    <TraceStrip runId={runId} />
+                  )}
+                </div>
               );
             })}
             {thinking && (

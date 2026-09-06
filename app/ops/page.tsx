@@ -5,7 +5,7 @@ import { loadPolicy } from "@/lib/guardrail";
 import { readOpsSnapshot, type TraceDoc } from "@/lib/metrics";
 import { CHAT_MODEL } from "@/lib/model";
 import { formatMicros } from "@/lib/pricing";
-import { DayColumns, Meter, TtftHistogram } from "@/components/ops/charts";
+import { Meter, TtftHistogram } from "@/components/ops/charts";
 import { Pipeline } from "@/components/ops/pipeline";
 import { LiveRefresh } from "@/components/ops/live-refresh";
 
@@ -53,7 +53,7 @@ function statusSentence(args: {
     args.queueDepth > 0
       ? `${args.queueDepth} generation${args.queueDepth === 1 ? "" : "s"} in flight`
       : "the queue is idle";
-  return `All lanes nominal: ${canary}, ${load}, ${args.finishes} answer${args.finishes === 1 ? "" : "s"} served today.`;
+  return `All lanes nominal: ${canary}, ${load}, ${args.finishes.toLocaleString("en-US")} answer${args.finishes === 1 ? "" : "s"} served so far.`;
 }
 
 function TraceRow({ trace, today }: { trace: TraceDoc; today: string }) {
@@ -156,9 +156,9 @@ export default async function OpsPage() {
       {/* The pipeline schematic: the page's centerpiece */}
       <section aria-label="Serving pipeline" className="border-t border-line-strong pt-6 pb-2">
         <div className="flex items-baseline justify-between pb-6">
-          <SectionLabel>Request pipeline · today (UTC)</SectionLabel>
+          <SectionLabel>Request pipeline · all time</SectionLabel>
           <p className="font-mono text-[11px] text-ink-faint">
-            {snapshot.day}
+            {snapshot.since ? `since ${snapshot.since}` : "since launch"}
           </p>
         </div>
         <Pipeline
@@ -263,42 +263,30 @@ export default async function OpsPage() {
         </div>
       </section>
 
-      {/* Week + spend */}
-      <section
-        aria-label="Seven days"
-        className="grid grid-cols-1 gap-x-10 gap-y-8 border-t border-line pt-6 pb-10 sm:grid-cols-2"
-      >
-        <div>
-          <div className="pb-3">
-            <SectionLabel>Answers · 7 days</SectionLabel>
-          </div>
-          <DayColumns
-            points={snapshot.days.map((d) => ({
-              day: d.day,
-              value: d.counters.finishes ?? 0,
-            }))}
-            formatValue={(v) => String(v)}
-            ariaLabel="Answers served per day over the last seven days"
-          />
+      {/* Lifetime ledger: totals that stay honest through quiet weeks */}
+      <section aria-label="Ledger" className="border-t border-line pt-6 pb-10">
+        <div className="pb-2">
+          <SectionLabel>Ledger · all time</SectionLabel>
         </div>
-        <div>
-          <div className="flex items-baseline justify-between pb-3">
-            <SectionLabel>Spend · 7 days</SectionLabel>
-            <p className="font-mono text-[11px] tabular-nums text-ink-soft">
-              today {formatMicros(c.costMicros ?? 0)}
-              {finishes > 0 &&
-                ` · ${formatMicros(Math.round((c.costMicros ?? 0) / finishes))}/answer`}
-            </p>
-          </div>
-          <DayColumns
-            points={snapshot.days.map((d) => ({
-              day: d.day,
-              value: d.counters.costMicros ?? 0,
-            }))}
-            formatValue={(v) => formatMicros(v)}
-            ariaLabel="Model spend per day over the last seven days"
-          />
-        </div>
+        <p className="max-w-2xl text-sm leading-relaxed text-ink-soft">
+          {finishes.toLocaleString("en-US")} answer{finishes === 1 ? "" : "s"}{" "}
+          served for{" "}
+          <span className="font-medium text-ink">
+            {formatMicros(c.costMicros ?? 0)}
+          </span>{" "}
+          in model spend
+          {finishes > 0 && (
+            <>
+              {" "}
+              ({formatMicros(Math.round((c.costMicros ?? 0) / finishes))} per
+              answer)
+            </>
+          )}
+          , {tokens.toLocaleString("en-US")} tokens through the gateway,{" "}
+          {(c.cacheHits ?? 0) + dedupHits} request
+          {(c.cacheHits ?? 0) + dedupHits === 1 ? "" : "s"} absorbed by the
+          cache and dedup layers before spending anything.
+        </p>
       </section>
 
       {/* Recent answers */}
@@ -332,7 +320,11 @@ export default async function OpsPage() {
               </thead>
               <tbody className="divide-y divide-line">
                 {snapshot.recentTraces.map((trace) => (
-                  <TraceRow key={trace.requestId} trace={trace} today={snapshot.day} />
+                  <TraceRow
+                    key={trace.requestId}
+                    trace={trace}
+                    today={new Date().toISOString().slice(0, 10)}
+                  />
                 ))}
               </tbody>
             </table>
@@ -372,8 +364,8 @@ export default async function OpsPage() {
                 : "no probe yet",
             ],
             [
-              "token ceiling",
-              `${tokens.toLocaleString("en-US")} / ${globalBudget.toLocaleString("en-US")} (${((tokens / globalBudget) * 100).toFixed(1)}%)`,
+              "daily token ceiling",
+              `${snapshot.dailyBudgetUsed.toLocaleString("en-US")} / ${globalBudget.toLocaleString("en-US")} (${((snapshot.dailyBudgetUsed / globalBudget) * 100).toFixed(1)}%)`,
             ],
             ["kill switch", snapshot.killSwitch ? "engaged" : "off"],
           ].map(([term, value]) => (
@@ -391,7 +383,8 @@ export default async function OpsPage() {
           ))}
         </dl>
         <p className="pt-8 text-xs leading-relaxed text-ink-faint">
-          Counters reset daily at midnight UTC; traces are kept for seven days
+          Counters accumulate for the site&rsquo;s lifetime; latency
+          distributions cover the last 500 answers; traces are kept for seven days
           and never contain visitor message content. The architecture behind
           this page is the subject of{" "}
           <Link href="/blog" className="u-link">
