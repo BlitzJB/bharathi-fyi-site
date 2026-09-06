@@ -111,6 +111,7 @@ async function guardrailStep(job: ChatJob): Promise<GuardVerdict> {
     guardReason: verdict.reason,
     policyVersion: verdict.policyVersion,
     guardMs: Date.now() - started,
+    guardStartedAt: new Date(started).toISOString(),
   };
   const bumps: Promise<void>[] = [traceWrite(job.requestId, fields)];
   if (verdict.category === "off_topic") bumps.push(bumpCounter("guardOffTopic"));
@@ -140,6 +141,7 @@ async function retrieveStep(job: ChatJob): Promise<Retrieval> {
   await traceWrite(job.requestId, {
     retrievalMode: mode,
     retrievalMs: Date.now() - started,
+    retrievalStartedAt: new Date(started).toISOString(),
     retrievedChunks: chunks
       ? JSON.stringify(
           chunks.map((c) => ({ id: c.id, score: Number(c.score.toFixed(4)) })),
@@ -181,6 +183,7 @@ async function generateWithLadder(
     const skip = await isBreakerOpen(rung.target);
     if (skip) continue;
     const chaos = await chaosModeStep(rung.target);
+    await markGenerationStart(job);
     try {
       const result = chaos
         ? await chaosRung(chaos, writable)
@@ -220,6 +223,14 @@ async function resolvePrimaryModel(job: ChatJob): Promise<string> {
 async function isBreakerOpen(target: string): Promise<boolean> {
   "use step";
   return breakerOpen(target);
+}
+
+/** Timestamp the start of a generation attempt for the trace waterfall. */
+async function markGenerationStart(job: ChatJob): Promise<void> {
+  "use step";
+  await traceWrite(job.requestId, {
+    generationStartedAt: new Date().toISOString(),
+  });
 }
 
 function textFromMessages(messages: ModelMessage[]): string {
@@ -397,6 +408,8 @@ async function verifyAndFinalize(job: ChatJob, generated: Generated) {
     traceWrite(job.requestId, {
       finishReason: generated.finishReason,
       totalTokens: generated.totalTokens,
+      inputTokens: generated.inputTokens ?? 0,
+      outputTokens: generated.outputTokens ?? 0,
       costMicros: cost,
       durationMs,
       finishedAt: new Date().toISOString(),

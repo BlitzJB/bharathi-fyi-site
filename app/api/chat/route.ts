@@ -274,10 +274,12 @@ export async function POST(req: Request) {
   log("chat.enqueue", { requestId, caller, chatId, runId: run.runId });
 
   // Tap the stream to measure time-to-first-token as the visitor saw it.
+  // Only delta chunks count: the stream's framing chunks arrive as soon as
+  // the run attaches, long before the model says anything.
   let sawFirstChunk = false;
   const ttftTap = new TransformStream<UIMessageChunk, UIMessageChunk>({
     transform: (chunk, controller) => {
-      if (!sawFirstChunk) {
+      if (!sawFirstChunk && chunk.type.endsWith("-delta")) {
         sawFirstChunk = true;
         const ttftMs = Date.now() - startedAt;
         void Promise.all([

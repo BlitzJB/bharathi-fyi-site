@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:authoredup.com)",
+      "WebFetch(domain:justinwelsh.me)",
+      "WebFetch(domain:ship30for30.com)",
+      "Bash(python3 .claude/scripts/slop-check.py:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/scripts/slop-check.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

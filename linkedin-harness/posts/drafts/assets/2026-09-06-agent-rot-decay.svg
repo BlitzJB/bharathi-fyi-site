@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="900" fill="#faf9f7"/>
+  <text x="80" y="78" font-size="36" font-weight="700" fill="#1d1c1a">Agents don&#8217;t fail randomly. They rot on a schedule.</text>
+  <text x="80" y="112" font-size="20" fill="#6b6a67">arXiv 2609.01660 &#183; success of an n-step workflow &#8776; per-step reliability p, compounded: p&#8319;</text>
+
+  <!-- grid -->
+  <g stroke="#e4e1dc" stroke-width="1">
+    <line x1="150" y1="210" x2="1120" y2="210"/>
+    <line x1="150" y1="385.0" x2="1120" y2="385.0"/>
+    <line x1="150" y1="560" x2="1120" y2="560"/>
+  </g>
+  <g font-size="16" fill="#6b6a67">
+    <text x="136" y="215" text-anchor="end">100%</text>
+    <text x="136" y="390.0" text-anchor="end">50%</text>
+    <text x="136" y="565" text-anchor="end">0%</text>
+    <text x="150" y="590">0</text>
+    <text x="635.0" y="590" text-anchor="middle">50 dependent steps</text>
+    <text x="1120" y="590" text-anchor="end">100</text>
+  </g>
+
+  <!-- curves -->
+  <polyline points="150.0,210.0 169.4,217.0 188.8,223.8 208.2,230.5 227.6,237.0 247.0,243.5 266.4,249.8 285.8,255.9 305.2,262.0 324.6,267.9 344.0,273.7 363.4,279.4 382.8,285.0 402.2,290.5 421.6,295.8 441.0,301.1 460.4,306.3 479.8,311.3 499.2,316.3 518.6,321.1 538.0,325.9 557.4,330.5 576.8,335.1 596.2,339.6 615.6,343.9 635.0,348.2 654.4,352.5 673.8,356.6 693.2,360.6 712.6,364.6 732.0,368.5 751.4,372.3 770.8,376.0 790.2,379.7 809.6,383.3 829.0,386.8 848.4,390.3 867.8,393.6 887.2,396.9 906.6,400.2 926.0,403.4 945.4,406.5 964.8,409.5 984.2,412.5 1003.6,415.5 1023.0,418.3 1042.4,421.2 1061.8,423.9 1081.2,426.6 1100.6,429.3 1120.0,431.9" fill="none" stroke="#6aa9e9" stroke-width="3"/>
+  <polyline points="150.0,210.0 169.4,244.1 188.8,274.9 208.2,302.7 227.6,327.8 247.0,350.4 266.4,370.9 285.8,389.3 305.2,406.0 324.6,421.0 344.0,434.5 363.4,446.8 382.8,457.8 402.2,467.8 421.6,476.8 441.0,484.9 460.4,492.2 479.8,498.8 499.2,504.8 518.6,510.2 538.0,515.0 557.4,519.4 576.8,523.4 596.2,526.9 615.6,530.2 635.0,533.1 654.4,535.7 673.8,538.1 693.2,540.2 712.6,542.1 732.0,543.9 751.4,545.4 770.8,546.9 790.2,548.1 809.6,549.3 829.0,550.3 848.4,551.3 867.8,552.1 887.2,552.9 906.6,553.6 926.0,554.2 945.4,554.8 964.8,555.3 984.2,555.8 1003.6,556.2 1023.0,556.5 1042.4,556.9 1061.8,557.2 1081.2,557.5 1100.6,557.7 1120.0,557.9" fill="none" stroke="#0d5aa7" stroke-width="3"/>
+
+  <!-- direct labels: ink text, colored swatch carries identity -->
+  <g font-size="18" fill="#1d1c1a">
+    <rect x="620" y="329.0" width="26" height="4" fill="#6aa9e9"/>
+    <text x="654" y="337.0">99% per step: down to 37% by step 100</text>
+    <rect x="500" y="491.0" width="26" height="4" fill="#0d5aa7"/>
+    <text x="534" y="499.0">95% per step: 0.6% by step 100</text>
+  </g>
+
+  <!-- step-16 marker -->
+  <line x1="305.2" y1="210" x2="305.2" y2="560" stroke="#c4432b" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="315.2" y="234" font-size="17" font-weight="700" fill="#c4432b">step 16: where every tested model</text>
+  <text x="315.2" y="256" font-size="17" font-weight="700" fill="#c4432b">hit near-zero on agentic tasks</text>
+  <text x="315.20000000000005" y="280" font-size="15" fill="#6b6a67">(measured per-step reliability sat far below</text>
+  <text x="315.20000000000005" y="300" font-size="15" fill="#6b6a67">these illustrative curves)</text>
+
+  <!-- findings row -->
+  <rect x="80" y="640" width="500" height="120" rx="12" fill="#fbeae5" stroke="#c4432b" stroke-width="2"/>
+  <text x="330" y="682" font-size="21" font-weight="700" fill="#c4432b" text-anchor="middle">Trimming context makes it WORSE</text>
+  <text x="330" y="710" font-size="17" fill="#7a3527" text-anchor="middle">bounded context steepened decay:</text>
+  <text x="330" y="734" font-size="17" font-weight="700" fill="#7a3527" text-anchor="middle">slope &#8722;0.69 vs &#8722;0.44 (p = 3&#215;10&#8315;&#8310;)</text>
+
+  <rect x="620" y="640" width="500" height="120" rx="12" fill="#eef4fb" stroke="#0a66c2" stroke-width="2"/>
+  <text x="870" y="682" font-size="21" font-weight="700" fill="#0a66c2" text-anchor="middle">Benchmarks can&#8217;t see the cliff</text>
+  <text x="870" y="710" font-size="17" fill="#1d1c1a" text-anchor="middle">9 models &#183; 10,664 trajectories &#183; rot follows</text>
+  <text x="870" y="734" font-size="17" font-weight="700" fill="#1d1c1a" text-anchor="middle">step count, not context length</text>
+
+  <line x1="80" y1="800" x2="1120" y2="800" stroke="#d8d5d0" stroke-width="2"/>
+  <text x="600" y="856" font-size="30" font-weight="700" fill="#1d1c1a" text-anchor="middle">Budget reliability per step, the way SREs budget errors.</text>
+</svg>
