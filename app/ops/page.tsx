@@ -172,8 +172,9 @@ export default async function OpsPage() {
               name: "Admission",
               figure: String(c.admitted ?? 0),
               note: "rate + token budgets",
+              // Shedding is the system working, not an alert; cumulative
+              // sheds are expected to be nonzero forever.
               exit: (c.sheds ?? 0) > 0 ? { label: "shed", value: c.sheds } : null,
-              alert: (c.sheds ?? 0) > 0,
             },
             {
               name: "Cache",
