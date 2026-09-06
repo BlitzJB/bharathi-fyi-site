@@ -120,6 +120,10 @@ export async function POST(req: Request) {
     return Response.json({ error: "Malformed request." }, { status: 400 });
   }
 
+  // Counted before dedup/cache short-circuits so the pipeline schematic's
+  // "requests" really means everything that arrived well-formed.
+  await bumpCounter("requests");
+
   const chatId = parsed.id ?? randomUUID();
   const messages = parsed.messages.slice(-MAX_MESSAGES) as unknown as UIMessage[];
   const last = messages[messages.length - 1];
@@ -185,7 +189,6 @@ export async function POST(req: Request) {
   const inputChars = messages.reduce((sum, m) => sum + textLength(m), 0);
   const estimatedTokens = Math.ceil(inputChars / 4) + MAX_OUTPUT_TOKENS;
 
-  await bumpCounter("requests");
   const verdict = await admit(caller, estimatedTokens);
   if (!verdict.ok) {
     log(

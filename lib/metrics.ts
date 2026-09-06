@@ -130,24 +130,58 @@ export type OpsSnapshot = {
   duration: { p50: number | null; p95: number | null; samples: number };
   queueDepth: number;
   recent: { requestId: string; runId: string }[];
+  recentTraces: TraceDoc[];
   killSwitch: boolean;
+  modelOverride: string | null;
+  breakers: { primary: boolean; fallback: boolean };
   evals: { passed: number; total: number; rate: number; at: string } | null;
   canary: { status: string; elapsedMs: number; at: string } | null;
+  /** Raw millisecond samples for distribution rendering, unsorted. */
+  ttftSamples: number[];
+  /** Last 7 days of counters, oldest first. */
+  days: { day: string; counters: Record<string, number> }[];
 };
 
 export async function readOpsSnapshot(): Promise<OpsSnapshot> {
   const day = metricsDay();
-  const [counters, ttftRaw, durationRaw, depth, recentRaw, killSwitch, evalsRaw, canaryRaw] =
-    await Promise.all([
-      redis.hgetall<Record<string, string>>(dayKey(day)),
-      redis.lrange(`metrics:ttft:${day}`, 0, SAMPLE_CAP - 1),
-      redis.lrange(`metrics:duration:${day}`, 0, SAMPLE_CAP - 1),
-      redis.get<number>("queue:active-runs"),
-      redis.lrange("traces:recent", 0, 11),
-      redis.get<string | number>("flags:chat:disabled"),
-      redis.get<OpsSnapshot["evals"]>("evals:latest"),
-      redis.get<OpsSnapshot["canary"]>("canary:latest"),
-    ]);
+  const dayKeys = Array.from({ length: 7 }, (_, i) => metricsDay(6 - i));
+  const [
+    counters,
+    ttftRaw,
+    durationRaw,
+    depth,
+    recentRaw,
+    killSwitch,
+    evalsRaw,
+    canaryRaw,
+    override,
+    breakerPrimary,
+    breakerFallback,
+    ...dayHashes
+  ] = await Promise.all([
+    redis.hgetall<Record<string, string>>(dayKey(day)),
+    redis.lrange(`metrics:ttft:${day}`, 0, SAMPLE_CAP - 1),
+    redis.lrange(`metrics:duration:${day}`, 0, SAMPLE_CAP - 1),
+    redis.get<number>("queue:active-runs"),
+    redis.lrange("traces:recent", 0, 11),
+    redis.get<string | number>("flags:chat:disabled"),
+    redis.get<OpsSnapshot["evals"]>("evals:latest"),
+    redis.get<OpsSnapshot["canary"]>("canary:latest"),
+    redis.get<string>("flags:chat:model"),
+    redis.get<string>("breaker:primary:open"),
+    redis.get<string>("breaker:fallback:open"),
+    ...dayKeys.map((d) => redis.hgetall<Record<string, string>>(dayKey(d))),
+  ]);
+
+  const recent = (recentRaw ?? []).map((entry) => {
+    const [requestId, runId] = String(entry).split(":");
+    return { requestId, runId };
+  });
+  const recentTraces = (
+    await Promise.all(
+      recent.slice(0, 10).map((r) => redis.hgetall<TraceDoc>(`trace:${r.requestId}`)),
+    )
+  ).filter((t): t is TraceDoc => Boolean(t && Object.keys(t).length > 0));
 
   const toSorted = (raw: unknown[]) =>
     raw.map(Number).filter(Number.isFinite).sort((a, b) => a - b);
@@ -173,12 +207,23 @@ export async function readOpsSnapshot(): Promise<OpsSnapshot> {
       samples: duration.length,
     },
     queueDepth: Math.max(0, Number(depth) || 0),
-    recent: (recentRaw ?? []).map((entry) => {
-      const [requestId, runId] = String(entry).split(":");
-      return { requestId, runId };
-    }),
+    recent,
+    recentTraces,
     killSwitch: Boolean(killSwitch),
+    modelOverride: override ?? null,
+    breakers: {
+      primary: Boolean(breakerPrimary),
+      fallback: Boolean(breakerFallback),
+    },
     evals: evalsRaw ?? null,
     canary: canaryRaw ?? null,
+    ttftSamples: (ttftRaw ?? []).map(Number).filter(Number.isFinite),
+    days: dayKeys.map((d, i) => {
+      const parsed: Record<string, number> = {};
+      for (const [k, v] of Object.entries(dayHashes[i] ?? {})) {
+        parsed[k] = Number(v) || 0;
+      }
+      return { day: d, counters: parsed };
+    }),
   };
 }
