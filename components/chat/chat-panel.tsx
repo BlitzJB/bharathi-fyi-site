@@ -142,14 +142,10 @@ function EmptyState({ onPick }: { onPick?: (starter: string) => void }) {
           Ask about my work.
         </h2>
         <p className="pt-2 text-[13px] leading-relaxed text-ink-soft">
-          Answers are grounded in a curated knowledgebase and served through
-          a production-grade pipeline: admission control, durable workflows,
-          guardrails, hybrid retrieval, and verified citations. Every answer
-          comes with its own trace, and the whole system runs in the open in{" "}
-          <a href="/ops" className="u-link">
-            the engine room
-          </a>
-          .
+          Answers come from a curated knowledgebase through a
+          production-grade pipeline: admission control, durable workflows,
+          guardrails, hybrid retrieval, and a verified citation trail on
+          every reply.
         </p>
       </div>
       <div>
@@ -179,6 +175,31 @@ function EmptyState({ onPick }: { onPick?: (starter: string) => void }) {
           ))}
         </ul>
       </div>
+      <a
+        href="/ops"
+        className="group rise-in flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3.5 transition-[border-color,background-color] duration-200 hover:border-line-strong hover:bg-ink/[0.02] motion-reduce:transition-none"
+        style={{ "--rise-index": STARTERS.length + 1 } as React.CSSProperties}
+      >
+        <span
+          aria-hidden
+          className="size-1.5 shrink-0 rounded-full bg-accent motion-safe:animate-pulse"
+        />
+        <span className="min-w-0 flex-1">
+          <span className="block font-mono text-[11px] tracking-[0.12em] text-ink uppercase">
+            Engine room
+          </span>
+          <span className="block pt-0.5 text-[12px] leading-snug text-ink-soft">
+            The pipeline runs in the open: live latency, per-answer traces,
+            and what each reply costs.
+          </span>
+        </span>
+        <span
+          aria-hidden
+          className="shrink-0 font-mono text-xs text-ink-faint transition-[translate,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-1 group-hover:text-accent-ink motion-reduce:transition-none"
+        >
+          &rarr;
+        </span>
+      </a>
     </div>
   );
 }
