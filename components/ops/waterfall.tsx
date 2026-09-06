@@ -10,6 +10,8 @@ export type Span = {
   startMs: number;
   endMs: number;
   note?: string;
+  /** "overhead" spans (workflow dispatch) render muted; work is accent. */
+  kind?: "work" | "overhead";
 };
 
 function fmtMs(ms: number): string {
@@ -56,12 +58,13 @@ export function Waterfall({
             style={{ left: pct(ttftMs) }}
           />
         )}
-        {spans.map((span) => {
+        {spans.map((span, i) => {
           const width = span.endMs - span.startMs;
+          const overhead = span.kind === "overhead";
           return (
-            <div key={span.name} className="relative" style={{ height: ROW }}>
+            <div key={`${span.name}-${i}`} className="relative" style={{ height: ROW }}>
               <div
-                className="absolute top-1 h-3 rounded-[2px] bg-accent"
+                className={`absolute top-1 rounded-[2px] ${overhead ? "h-2 translate-y-0.5 bg-line-strong" : "h-3 bg-accent"}`}
                 style={{
                   left: pct(span.startMs),
                   width: `max(2px, ${pct(width)})`,
@@ -69,7 +72,7 @@ export function Waterfall({
                 title={`${span.name}: ${fmtMs(span.startMs)} → ${fmtMs(span.endMs)}`}
               />
               <span
-                className="absolute top-0.5 font-mono text-[10px] tabular-nums whitespace-nowrap text-ink-soft"
+                className={`absolute top-0.5 font-mono text-[10px] tabular-nums whitespace-nowrap ${overhead ? "text-ink-faint" : "text-ink-soft"}`}
                 style={
                   span.endMs / domain > 0.82
                     ? { right: `calc(${pct(domain - span.startMs)} + 6px)` }
